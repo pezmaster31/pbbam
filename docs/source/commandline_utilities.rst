@@ -3,22 +3,12 @@
 Command Line Utilities
 ======================
 
-.. _command_line-pbindex:
+In addition to the main library and wrappers, pbbam also provides a few basic
+utilities for working with PacBio indices (".pbi" files).
 
-pbindex
--------
+.. toctree::
+   :maxdepth: 1
 
-::
-
-  Usage: pbindex <input>
-
-  pbindex creates a index file that enables random-access to PacBio-specific data
-  in BAM files. Generated index filename will be the same as input BAM plus .pbi suffix.
-
-  Options:
-    -h, --help            show this help message and exit
-    --version             show program's version number and exit
-
-  Input/Output:
-    input                 Input BAM file
+   tools/pbindex
+   tools/pbindexdump
 

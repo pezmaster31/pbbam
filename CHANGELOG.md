@@ -10,9 +10,17 @@ series.
 
 ## Active
 
+
+
+## [0.4.3] - 2015-12-22
+
 ### Added
 - Compile using ccache by default, if available. Can be manually disabled using -DPacBioBAM_use_ccache=OFF
 with cmake.
+- pbindexdump: command-line utility that converts PBI file data into human-readable formats. (JSON by default).
+
+### Changed
+- CMake option PacBioBAM_build_pbindex is being deprecated. Use PacBioBAM_build_tools instead.
 
 ## [0.4.2] - 2015-12-22
 

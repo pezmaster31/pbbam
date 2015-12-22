@@ -3,7 +3,7 @@
 ########################################################################
 
 cmake_policy(SET CMP0048 NEW)  # lets us set version in project()
-project(PacBioBAM VERSION 0.4.2 LANGUAGES CXX C)
+project(PacBioBAM VERSION 0.4.3 LANGUAGES CXX C)
 cmake_minimum_required(VERSION 3.0)
 
 # project name & version
@@ -13,17 +13,15 @@ set(PacBioBAM_VERSION
 )
 
 # list build-time options
-option(PacBioBAM_build_docs    "Build PacBioBAM's API documentation."           ON)
-option(PacBioBAM_build_tests   "Build PacBioBAM's unit tests."                  ON)
-option(PacBioBAM_build_shared  "Build PacBioBAM as shared library as well."     OFF)
-option(PacBioBAM_build_pbindex "Build pbindex tool."                            ON)
-option(PacBioBAM_wrap_csharp   "Build PacBioBAM with SWIG bindings for C#."     OFF)
-option(PacBioBAM_wrap_python   "Build PacBioBAM with SWIG bindings for Python." OFF)
-option(PacBioBAM_wrap_r        "Build PacBioBAM with SWIG bindings for R."      OFF)
-option(PacBioBAM_use_modbuild  "Build PacBioBAM using Modular Build System."    OFF)
-option(PacBioBAM_use_ccache    "Build PacBioBAM using ccache, if available."    ON)
-
-# --check build-time options --
+option(PacBioBAM_build_docs    "Build PacBioBAM's API documentation."                   ON)
+option(PacBioBAM_build_tests   "Build PacBioBAM's unit tests."                          ON)
+option(PacBioBAM_build_shared  "Build PacBioBAM as shared library as well."             OFF)
+option(PacBioBAM_build_tools   "Build PacBioBAM command line utilities (e.g. pbindex)"  ON)
+option(PacBioBAM_wrap_csharp   "Build PacBioBAM with SWIG bindings for C#."             OFF)
+option(PacBioBAM_wrap_python   "Build PacBioBAM with SWIG bindings for Python."         OFF)
+option(PacBioBAM_wrap_r        "Build PacBioBAM with SWIG bindings for R."              OFF)
+option(PacBioBAM_use_modbuild  "Build PacBioBAM using Modular Build System."            OFF)
+option(PacBioBAM_use_ccache    "Build PacBioBAM using ccache, if available."            ON)
 
 # enable ccache, if available 
 if(PacBioBAM_use_ccache)
@@ -33,6 +31,30 @@ if(PacBioBAM_use_ccache)
         set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    ccache)
     endif()
 endif()
+
+# Deprecating the "PacBioBAM_build_pbindex" command line option in favor of more
+# general "PacBioBAM_build_tools", as we're starting to add new utilities.
+#
+# That said, I don't want to break current auto tests/builds, so I'm providing a
+# warning message so devs are aware.
+#
+if(DEFINED PacBioBAM_build_pbindex)
+
+    # construct warning message
+    set(pbindex_warning "\nDeprecated:\n-DPacBioBAM_build_pbindex\n")
+    if (PacBioBAM_build_pbindex)
+        set(pbindex_warning "${pbindex_warning} Building as requested,")
+    else()
+        set(pbindex_warning "${pbindex_warning} Skipping as requested,")
+    endif()
+    set(pbindex_warning "${pbindex_warning} but support for this option will be removed at some point in the future.\n")
+    message(AUTHOR_WARNING "${pbindex_warning} ** Use -DPacBioBAM_build_tools instead. **\n")
+
+    # force PacBioBAM_build_tools option
+    set(PacBioBAM_build_tools ${PacBioBAM_build_pbindex} CACHE BOOL
+        "Build PacBioBAM with add'l utilities (e.g. pbindex, pbindexdump)." FORCE)
+endif()
+
 
 # enable testing if requested
 if(PacBioBAM_build_tests)
@@ -136,10 +158,15 @@ endif()
 
 # keep this order (src first, at least)
 add_subdirectory(src)
-add_subdirectory(tools)
+
+if(PacBioBAM_build_tools)
+    add_subdirectory(tools)
+endif()
+
 if(PacBioBAM_build_docs)
     add_subdirectory(docs)
 endif()
+
 if(PacBioBAM_build_tests)
     if (NOT GTEST_SRC_DIR)
         set(GTEST_SRC_DIR ../gtest)
