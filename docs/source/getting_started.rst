@@ -28,7 +28,6 @@ Additional requirements:
 * `CMake`_ (3.0+)
 * `Google Test`_
 * `htslib`_ (PacBio fork)
-* `samtools`_ (though this requirement will be removed soon)
 
 For additional languages:
 
@@ -47,7 +46,6 @@ For maximal convenience, install htslib and google test in the same parent direc
 .. _gcc: https://gcc.gnu.org/
 .. _Google Test: https://github.com/google/googletest
 .. _htslib: https://github.com/PacificBiosciences/htslib.git 
-.. _samtools: https://github.com/samtools/samtools
 .. _SWIG: http://www.swig.org/
 
 .. _getting_started-build:
