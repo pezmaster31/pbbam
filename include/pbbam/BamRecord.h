@@ -372,6 +372,12 @@ public:
     /// \returns true if this record has Pkmid data
     bool HasPkmid(void) const;
 
+    /// \returns true if this record has Pkmean2 data
+    bool HasPkmean2(void) const;
+
+    /// \returns true if this record has Pkmid2 data
+    bool HasPkmid2(void) const;
+
     /// \returns true if this record has PreBaseFrames aka IPD data
     bool HasPreBaseFrames(void) const;
 
@@ -640,6 +646,20 @@ public:
     /// \returns Pkmid as vector<float> object
     ///
     std::vector<float> Pkmid(Orientation orientation = Orientation::NATIVE) const;
+
+    /// \brief Fetches this record's Pkmean2 values ("pb" tag).
+    ///
+    /// \param[in] orientation     Orientation of output.
+    /// \returns Pkmean as vector<float> object
+    ///
+    std::vector<float> Pkmean2(Orientation orientation = Orientation::NATIVE) const;
+
+    /// \brief Fetches this record's Pkmid2 values ("pn" tag).
+    ///
+    /// \param[in] orientation     Orientation of output.
+    /// \returns Pkmid as vector<float> object
+    ///
+    std::vector<float> Pkmid2(Orientation orientation = Orientation::NATIVE) const;
 
     /// \brief Fetches this record's PreBaseFrames aka IPD values ("ip" tag).
     ///
@@ -970,6 +990,34 @@ public:
     ///
     BamRecord& Pkmid(const std::vector<uint16_t>& encodedPhotons);
 
+    /// \brief Sets this record's Pkmean2 values ("pn" tag).
+    ///
+    /// \param[in] photons
+    /// \returns reference to this record
+    ///
+    BamRecord& Pkmean2(const std::vector<float>& photons);
+
+    /// \brief Sets this record's Pkmean2 values ("pn" tag).
+    ///
+    /// \param[in] encodedPhotons
+    /// \returns reference to this record
+    ///
+    BamRecord& Pkmean2(const std::vector<uint16_t>& encodedPhotons);
+
+    /// \brief Sets this record's Pkmid2 values ("pb" tag).
+    ///
+    /// \param[in] photons
+    /// \returns reference to this record
+    ///
+    BamRecord& Pkmid2(const std::vector<float>& photons);
+
+    /// \brief Sets this record's Pkmid2 values ("pb" tag).
+    ///
+    /// \param[in] encodedPhotons
+    /// \returns reference to this record
+    ///
+    BamRecord& Pkmid2(const std::vector<uint16_t>& encodedPhotons);
+
     /// \brief Sets this record's PreBaseFrames aka IPD values ("ip" tag).
     ///
     /// \param[in] frames
@@ -1239,6 +1287,12 @@ public:
 
     /// \returns BamRecord::Pkmid with this view's parameters applied
     std::vector<float> Pkmid(void) const;
+
+    /// \returns BamRecord::Pkmean2 with this view's parameters applied
+    std::vector<float> Pkmean2(void) const;
+
+    /// \returns BamRecord::Pkmid2 with this view's parameters applied
+    std::vector<float> Pkmid2(void) const;
 
     /// \returns BamRecord::PreBaseFrames with this view's parameters applied
     Frames PrebaseFrames(void) const;

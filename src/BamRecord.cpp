@@ -73,6 +73,8 @@ static const string tagName_mergeQV                 = "mq";
 static const string tagName_numPasses               = "np";
 static const string tagName_pkmean                  = "pa";
 static const string tagName_pkmid                   = "pm";
+static const string tagName_pkmean2                 = "pb";
+static const string tagName_pkmid2                  = "pn";
 static const string tagName_pre_pulse_frames        = "pd";
 static const string tagName_pulse_call              = "pc";
 static const string tagName_pulse_call_width        = "px";
@@ -790,6 +792,8 @@ BamRecord& BamRecord::Clip(const ClipType clipType,
     string pulseCall = std::move(PulseCall(Orientation::GENOMIC));
     std::vector<float> pkmean = std::move(Pkmean(Orientation::GENOMIC));
     std::vector<float> pkmid = std::move(Pkmid(Orientation::GENOMIC));
+    std::vector<float> pkmean2 = std::move(Pkmean2(Orientation::GENOMIC));
+    std::vector<float> pkmid2 = std::move(Pkmid2(Orientation::GENOMIC));
     Frames prePulseFrames = std::move(PrePulseFrames(Orientation::GENOMIC).Data());
     Frames pulseCallWidth = std::move(PulseCallWidth(Orientation::GENOMIC).Data());
 
@@ -815,6 +819,8 @@ BamRecord& BamRecord::Clip(const ClipType clipType,
         internal::ReverseComplementCaseSens(pulseCall);
         internal::Reverse(pkmean);
         internal::Reverse(pkmid);
+        internal::Reverse(pkmean2);
+        internal::Reverse(pkmid2);
         internal::Reverse(prePulseFrames);
         internal::Reverse(pulseCallWidth);
 
@@ -840,6 +846,8 @@ BamRecord& BamRecord::Clip(const ClipType clipType,
     tags[internal::tagName_pulse_call]          = pulseCall;
     tags[internal::tagName_pkmean]              = EncodePhotons(pkmean);
     tags[internal::tagName_pkmid]               = EncodePhotons(pkmid);
+    tags[internal::tagName_pkmean2]             = EncodePhotons(pkmean2);
+    tags[internal::tagName_pkmid2]              = EncodePhotons(pkmid2);
     tags[internal::tagName_pre_pulse_frames]    = prePulseFrames.Data();
     tags[internal::tagName_pulse_call_width]    = pulseCallWidth.Data();
     if (HasStartFrame())
@@ -1188,6 +1196,12 @@ bool BamRecord::HasPkmean(void) const
 
 bool BamRecord::HasPkmid(void) const
 { return impl_.HasTag(internal::tagName_pkmid); }
+
+bool BamRecord::HasPkmean2(void) const
+{ return impl_.HasTag(internal::tagName_pkmean2); }
+
+bool BamRecord::HasPkmid2(void) const
+{ return impl_.HasTag(internal::tagName_pkmid2); }
 
 bool BamRecord::HasPrePulseFrames(void) const
 { return impl_.HasTag(internal::tagName_pre_pulse_frames); }
@@ -1551,6 +1565,40 @@ BamRecord& BamRecord::Pkmid(const std::vector<float>& photons)
 BamRecord& BamRecord::Pkmid(const std::vector<uint16_t>& encodedPhotons)
 {
     internal::CreateOrEdit(internal::tagName_pkmid, encodedPhotons, &impl_);
+    return *this;
+}
+
+std::vector<float> BamRecord::Pkmean2(Orientation orientation) const
+{
+    return FetchPhotons(internal::tagName_pkmean2, orientation);
+}
+
+BamRecord& BamRecord::Pkmean2(const std::vector<float>& photons)
+{
+    Pkmean2(EncodePhotons(photons));
+    return *this;
+}
+
+BamRecord& BamRecord::Pkmean2(const std::vector<uint16_t>& encodedPhotons)
+{
+    internal::CreateOrEdit(internal::tagName_pkmean2, encodedPhotons, &impl_);
+    return *this;
+}
+
+std::vector<float> BamRecord::Pkmid2(Orientation orientation) const
+{
+    return FetchPhotons(internal::tagName_pkmid2, orientation);
+}
+
+BamRecord& BamRecord::Pkmid2(const std::vector<float>& photons)
+{
+    Pkmid2(EncodePhotons(photons));
+    return *this;
+}
+
+BamRecord& BamRecord::Pkmid2(const std::vector<uint16_t>& encodedPhotons)
+{
+    internal::CreateOrEdit(internal::tagName_pkmid2, encodedPhotons, &impl_);
     return *this;
 }
 
