@@ -323,3 +323,135 @@ TEST(BamHeaderTest, ExtractFromRawDataOk)
     text = newHeader.ToSam();
     EXPECT_EQ(expectedText, text);
 }
+
+TEST(BamHeaderTest, MergeOk)
+{
+    const string hdrText1 = {
+        "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n"
+        "@RG\tID:a955def6\tPL:PACBIO\tDS:READTYPE=SUBREAD;DeletionQV=dq;DeletionTag=dt;"
+            "InsertionQV=iq;MergeQV=mq;SubstitutionQV=sq;Ipd:CodecV1=ip;BINDINGKIT=100356300;"
+            "SEQUENCINGKIT=100356200;BASECALLERVERSION=2.3.0.0.140018;FRAMERATEHZ=75.000000\t"
+            "PU:m140918_150013_42139_c100697631700000001823144703261565_s1_p0\n"
+        "@PG\tID:bam2bam-0.20.0\tPN:bam2bam\tVN:0.20.0\n"
+        "@PG\tID:bax2bam-0.0.2\tPN:bax2bam\tVN:0.0.2\n"
+        "@CO\tcomment1\n"
+    };
+
+    const string hdrText2 = {
+        "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n"
+        "@RG\tID:e83fc9c6\tPL:PACBIO\tDS:READTYPE=SCRAP;DeletionQV=dq;DeletionTag=dt;"
+            "InsertionQV=iq;MergeQV=mq;SubstitutionQV=sq;SubstitutionTag=st;Ipd:Frames=ip;"
+            "PulseWidth:Frames=pw;PkMid=pm;PkMean=pa;LabelQV=pq;AltLabel=pt;AltLabelQV=pv;"
+            "PulseMergeQV=pg;PulseCall=pc;PrePulseFrames=pd;PulseCallWidth=px;"
+            "BINDINGKIT=100372700;SEQUENCINGKIT=100356200;BASECALLERVERSION=0.1;"
+            "FRAMERATEHZ=100.000000\tPU:ArminsFakeMovie\n"
+        "@PG\tID:baz2bam-0.15.0\tPN:baz2bam\tVN:0.15.0\n"
+        "@PG\tID:bazFormat-0.3.0\tPN:bazFormat\tVN:0.3.0\n"
+        "@PG\tID:bazwriter-0.15.0\tPN:bazwriter\tVN:0.15.0\n"
+        "@CO\tcomment2\n"
+    };
+
+    const string mergedText = {
+        "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n"
+        "@RG\tID:a955def6\tPL:PACBIO\tDS:READTYPE=SUBREAD;DeletionQV=dq;DeletionTag=dt;"
+            "InsertionQV=iq;MergeQV=mq;SubstitutionQV=sq;Ipd:CodecV1=ip;BINDINGKIT=100356300;"
+            "SEQUENCINGKIT=100356200;BASECALLERVERSION=2.3.0.0.140018;FRAMERATEHZ=75.000000\t"
+            "PU:m140918_150013_42139_c100697631700000001823144703261565_s1_p0\n"
+        "@RG\tID:e83fc9c6\tPL:PACBIO\tDS:READTYPE=SCRAP;DeletionQV=dq;DeletionTag=dt;"
+            "InsertionQV=iq;MergeQV=mq;SubstitutionQV=sq;SubstitutionTag=st;Ipd:Frames=ip;"
+            "PulseWidth:Frames=pw;PkMid=pm;PkMean=pa;LabelQV=pq;AltLabel=pt;AltLabelQV=pv;"
+            "PulseMergeQV=pg;PulseCall=pc;PrePulseFrames=pd;PulseCallWidth=px;"
+            "BINDINGKIT=100372700;SEQUENCINGKIT=100356200;BASECALLERVERSION=0.1;"
+            "FRAMERATEHZ=100.000000\tPU:ArminsFakeMovie\n"
+        "@PG\tID:bam2bam-0.20.0\tPN:bam2bam\tVN:0.20.0\n"
+        "@PG\tID:bax2bam-0.0.2\tPN:bax2bam\tVN:0.0.2\n"
+        "@PG\tID:baz2bam-0.15.0\tPN:baz2bam\tVN:0.15.0\n"
+        "@PG\tID:bazFormat-0.3.0\tPN:bazFormat\tVN:0.3.0\n"
+        "@PG\tID:bazwriter-0.15.0\tPN:bazwriter\tVN:0.15.0\n"
+        "@CO\tcomment1\n"
+        "@CO\tcomment2\n"
+    };
+
+    { // operator+
+
+        const BamHeader header1(hdrText1);
+        const BamHeader header2(hdrText2);
+        const BamHeader merged = header1 + header2;
+        EXPECT_EQ(mergedText, merged.ToSam());
+
+        // also make sure inputs not changed
+        EXPECT_EQ(hdrText1, header1.ToSam());
+        EXPECT_EQ(hdrText2, header2.ToSam());
+    }
+
+    { // operator+=
+
+        BamHeader header1(hdrText1);
+        header1 += BamHeader(hdrText2);
+        EXPECT_EQ(mergedText, header1.ToSam());
+    }
+}
+
+TEST(BamHeaderTest, MergeHandlesDuplicateReadGroups)
+{
+    const string hdrText = {
+        "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n"
+        "@RG\tID:a955def6\tPL:PACBIO\tDS:READTYPE=SUBREAD;DeletionQV=dq;DeletionTag=dt;"
+            "InsertionQV=iq;MergeQV=mq;SubstitutionQV=sq;Ipd:CodecV1=ip;BINDINGKIT=100356300;"
+            "SEQUENCINGKIT=100356200;BASECALLERVERSION=2.3.0.0.140018;FRAMERATEHZ=75.000000\t"
+            "PU:m140918_150013_42139_c100697631700000001823144703261565_s1_p0\n"
+        "@PG\tID:bam2bam-0.20.0\tPN:bam2bam\tVN:0.20.0\n"
+        "@PG\tID:bax2bam-0.0.2\tPN:bax2bam\tVN:0.0.2\n"
+    };
+
+    // duplicate @RG:IDs handled ok (i.e. not duplicated in output)
+
+    const BamHeader header1(hdrText);
+    const BamHeader header2(hdrText);
+    const BamHeader merged = header1 + header2;
+    EXPECT_EQ(hdrText, merged.ToSam());
+}
+
+TEST(BamHeaderTest, IncompatibleMergeFails)
+{
+    { // @HD:VN
+        const string hdrText1 = { "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n" };
+        const string hdrText2 = { "@HD\tVN:1.0\tSO:unknown\tpb:3.0.1\n" };
+        const BamHeader header1(hdrText1);
+        const BamHeader header2(hdrText2);
+        EXPECT_THROW(header1 + header2, std::runtime_error);
+    }
+
+    { // @HD:SO
+        const string hdrText1 = { "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n" };
+        const string hdrText2 = { "@HD\tVN:1.1\tSO:coordinate\tpb:3.0.1\n" };
+        const BamHeader header1(hdrText1);
+        const BamHeader header2(hdrText2);
+        EXPECT_THROW(header1 + header2, std::runtime_error);
+    }
+
+    { // @HD:pb
+        const string hdrText1 = { "@HD\tVN:1.1\tSO:unknown\tpb:3.0.1\n" };
+        const string hdrText2 = { "@HD\tVN:1.1\tSO:unknown\tpb:3.0.3\n" };
+        const BamHeader header1(hdrText1);
+        const BamHeader header2(hdrText2);
+        EXPECT_THROW(header1 + header2, std::runtime_error);
+    }
+
+    { // @SQ list clash
+
+        const string hdrText1 = {
+            "@HD\tVN:1.1\tSO:coordinate\tpb:3.0.1\n"
+            "@SQ\tSN:foo\tLN:42\n"
+            "@SQ\tSN:bar\tLN:24\n"
+        };
+        const string hdrText2 = {
+            "@HD\tVN:1.1\tSO:coordinate\tpb:3.0.1\n"
+            "@SQ\tSN:foo\tLN:42\n"
+            "@SQ\tSN:baz\tLN:99\n"
+        };
+        const BamHeader header1(hdrText1);
+        const BamHeader header2(hdrText2);
+        EXPECT_THROW(header1 + header2, std::runtime_error);
+    }
+}

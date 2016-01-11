@@ -1,15 +1,10 @@
 find_package(Threads REQUIRED)
 
-# find samtools binary for comparing against 'gold standard' files
-#set(Samtools_Dir "/Users/derek/development/samtools")
-set(Samtools_Dir "${PacBioBAM_RootDir}/../../../../prebuilt.out/samtools/samtools-0.1.19/ubuntu-1404/bin")
-find_program(Samtools_Bin samtools HINTS ${Samtools_Dir})
-
 # ensure tests directory exists
 file(MAKE_DIRECTORY ${PacBioBAM_TestsDir}/bin)
 file(MAKE_DIRECTORY ${PacBioBAM_TestsDir}/data/temp)
 
-# generate paths/values used by for test
+# generate paths/values used by for unit tests
 configure_file(
     ${PacBioBAM_TestsDir}/src/TestData.h.in
     ${PacBioBAM_TestsDir}/src/TestData.h
@@ -26,7 +21,7 @@ include_directories(
     ${gtest_SOURCE_DIR}
 )
 
-# grab PacBioBAM test source files
+# grab PacBioBAM unit test source files
 include(files.cmake)
 set(SOURCES
     ${PacBioBAMTest_H}
@@ -34,7 +29,7 @@ set(SOURCES
 )
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${PacBioBAM_CXX_FLAGS}")
 
-# define test executable
+# define unit test executable
 add_definitions(-DPBBAM_TESTING)
 if(MSVC)
     # VS2012+ pooh-pooh's Derek's "#define private public" trick
@@ -42,7 +37,7 @@ if(MSVC)
 endif()
 
 if(PacBioBAM_wrap_r)
-    # SWIG R does not support PBBAM_SHARED_PTR, but it does support boost::shared_ptr
+    # SWIG R does not support std::shared_ptr, but it does support boost::shared_ptr
     # So force boost if we're wrapping for R.
     add_definitions(-DPBBAM_USE_BOOST_SHARED_PTR)
 endif()
@@ -51,7 +46,7 @@ set_target_properties(test_pbbam PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PacBioBAM_TestsDir}/bin
 )
 
-# set up unit test to run our executable
+# add unit tests to test framework
 add_test(
     NAME UnitTests
     WORKING_DIRECTORY ${PacBioBAM_TestsDir}/bin

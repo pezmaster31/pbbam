@@ -10,7 +10,17 @@ series.
 
 ## Active
 
+## [0.4.4] - 2016-01-07
 
+### Added
+- bam2sam command line utility. The primary benefit is removing the dependency on samtools during tests,
+but also provides users a functioning BAM -> SAM converter in the absence of samtools.
+- pbmerge command line utility. Allows merging N BAM files into one, optionally creating the PBI file 
+alongside.
+- Added BamRecord::Pkmean2 & Pkmid2, 2D equivalent of Pkmean/Pkmid, for internal BAMs.
+
+### Removed 
+- samtools dependency`
 
 ## [0.4.3] - 2015-12-22
 

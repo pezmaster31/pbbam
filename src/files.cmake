@@ -63,6 +63,7 @@ set( PacBioBAM_H
 
     # API-internal headers & inline files
     ${PacBioBAM_IncludeDir}/pbbam/internal/Accuracy.inl
+    ${PacBioBAM_IncludeDir}/pbbam/internal/BamHeader.inl
     ${PacBioBAM_IncludeDir}/pbbam/internal/BamRecord.inl
     ${PacBioBAM_IncludeDir}/pbbam/internal/BamRecordBuilder.inl
     ${PacBioBAM_IncludeDir}/pbbam/internal/BamRecordImpl.inl

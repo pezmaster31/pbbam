@@ -3,7 +3,7 @@
 ########################################################################
 
 cmake_policy(SET CMP0048 NEW)  # lets us set version in project()
-project(PacBioBAM VERSION 0.4.3 LANGUAGES CXX C)
+project(PacBioBAM VERSION 0.4.4 LANGUAGES CXX C)
 cmake_minimum_required(VERSION 3.0)
 
 # project name & version
@@ -87,6 +87,7 @@ set(PacBioBAM_IncludeDir    ${PacBioBAM_RootDir}/include)
 set(PacBioBAM_SourceDir     ${PacBioBAM_RootDir}/src)
 set(PacBioBAM_SwigSourceDir ${PacBioBAM_RootDir}/src/swig)
 set(PacBioBAM_TestsDir      ${PacBioBAM_RootDir}/tests)
+set(PacBioBAM_ToolsDir      ${PacBioBAM_RootDir}/tools)
 
 if(NOT PacBioBAM_OutputDir)
     set(PacBioBAM_OutputDir ${PacBioBAM_RootDir})
