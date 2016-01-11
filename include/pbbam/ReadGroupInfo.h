@@ -67,6 +67,8 @@ enum class BaseFeature
   , PULSE_WIDTH
   , PKMID
   , PKMEAN
+  , PKMID2
+  , PKMEAN2
   , LABEL
   , LABEL_QV
   , ALT_LABEL

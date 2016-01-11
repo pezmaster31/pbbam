@@ -79,6 +79,8 @@ static const string feature_IP = string{ "Ipd" };
 static const string feature_PW = string{ "PulseWidth" };
 static const string feature_PM = string{ "PkMid" };
 static const string feature_PA = string{ "PkMean" };
+static const string feature_PN = string{ "PkMid2" };
+static const string feature_PB = string{ "PkMean2" };
 static const string feature_LT = string{ "Label" };
 static const string feature_PQ = string{ "LabelQV" };
 static const string feature_PT = string{ "AltLabel" };
@@ -127,6 +129,8 @@ string BaseFeatureName(const BaseFeature& feature)
         case BaseFeature::PULSE_WIDTH      : return feature_PW;
         case BaseFeature::PKMID            : return feature_PM;
         case BaseFeature::PKMEAN           : return feature_PA;
+        case BaseFeature::PKMID2           : return feature_PN;
+        case BaseFeature::PKMEAN2          : return feature_PB;
         case BaseFeature::LABEL_QV         : return feature_PQ;
         case BaseFeature::ALT_LABEL        : return feature_PT;
         case BaseFeature::ALT_LABEL_QV     : return feature_PV;
@@ -198,6 +202,8 @@ void InitNameToFeature(void)
         nameToFeature[feature_PW] = BaseFeature::PULSE_WIDTH;
         nameToFeature[feature_PM] = BaseFeature::PKMID;
         nameToFeature[feature_PA] = BaseFeature::PKMEAN;
+        nameToFeature[feature_PN] = BaseFeature::PKMID2;
+        nameToFeature[feature_PB] = BaseFeature::PKMEAN2;
         nameToFeature[feature_PQ] = BaseFeature::LABEL_QV;
         nameToFeature[feature_PT] = BaseFeature::ALT_LABEL;
         nameToFeature[feature_PV] = BaseFeature::ALT_LABEL_QV;

@@ -209,6 +209,12 @@ void VirtualPolymeraseBamRecord::StitchSources(void)
         if (b.HasPkmean())
             MoveAppend(b.Pkmean(), pa);
 
+        if (b.HasPkmid2())
+            MoveAppend(b.Pkmid2(), pm);
+
+        if (b.HasPkmean2())
+            MoveAppend(b.Pkmean2(), pa);
+
         if (b.HasStartFrame())
             MoveAppend(b.StartFrame(), sf);
 

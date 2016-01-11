@@ -26,6 +26,8 @@ using namespace PacBio::BAM;
 #if defined(SWIGR) || defined(SWIGPYTHON)
 %rename("EncodedPkmean") PacBio::BAM::BamRecord::Pkmean(const std::vector<uint16_t>&);
 %rename("EncodedPkmid")  PacBio::BAM::BamRecord::Pkmid(const std::vector<uint16_t>&);
+%rename("EncodedPkmean2") PacBio::BAM::BamRecord::Pkmean2(const std::vector<uint16_t>&);
+%rename("EncodedPkmid2")  PacBio::BAM::BamRecord::Pkmid2(const std::vector<uint16_t>&);
 #endif
 
 %include <pbbam/BamRecord.h>
