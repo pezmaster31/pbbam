@@ -30,11 +30,10 @@ create_pbbam_tool(
 
 # cram tests
 if (PacBioBAM_build_tests)
-    set(Bam2SamTestsDir ${PacBioBAM_TestsDir}/src/tools/bam2sam)
     add_test(
         NAME bam2sam_CramTests
         WORKING_DIRECTORY ${PacBioBAM_TestsDir}/scripts
         COMMAND "python" cram.py
-            ${Bam2SamTestsDir}/bam2sam.t
+            ${PacBioBAM_CramTestsDir}/bam2sam.t
     )
 endif()

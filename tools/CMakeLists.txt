@@ -1,5 +1,6 @@
 
 set(ToolsCommonDir ${PacBioBAM_ToolsDir}/common)
+set(PacBioBAM_CramTestsDir ${PacBioBAM_TestsDir}/src/cram)
 
 # quash warning with OptionParser
 include(CheckCXXCompilerFlag)

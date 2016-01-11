@@ -1,8 +1,8 @@
 Setup:
 
-  $ BAM2SAM="$TESTDIR/../../../../bin/bam2sam" && export BAM2SAM
+  $ BAM2SAM="$TESTDIR/../../../bin/bam2sam" && export BAM2SAM
 
-  $ DATADIR="$TESTDIR/../../../data" && export DATADIR
+  $ DATADIR="$TESTDIR/../../data" && export DATADIR
 
 Normal:
 

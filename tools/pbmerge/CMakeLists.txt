@@ -28,13 +28,12 @@ create_pbbam_tool(
 
 # cram tests
 if (PacBioBAM_build_tests)
-    set(PbmergeTestsDir ${PacBioBAM_TestsDir}/src/tools/pbmerge)
     add_test(
         NAME pbmerge_CramTests
         WORKING_DIRECTORY ${PacBioBAM_TestsDir}/scripts
         COMMAND "python" cram.py
-            ${PbmergeTestsDir}/pacbio_ordering.t
-            ${PbmergeTestsDir}/aligned_ordering.t
-            ${PbmergeTestsDir}/mixed_ordering.t
+            ${PacBioBAM_CramTestsDir}/pbmerge_pacbio_ordering.t
+            ${PacBioBAM_CramTestsDir}/pbmerge_aligned_ordering.t
+            ${PacBioBAM_CramTestsDir}/pbmerge_mixed_ordering.t
     )
 endif()

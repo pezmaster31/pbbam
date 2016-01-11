@@ -1,10 +1,10 @@
 Setup:
 
-  $ TOOLS_BIN="$TESTDIR/../../../../bin" && export TOOLS_BIN
+  $ TOOLS_BIN="$TESTDIR/../../../bin" && export TOOLS_BIN
   $ PBMERGE="$TOOLS_BIN/pbmerge" && export PBMERGE
   $ BAM2SAM="$TOOLS_BIN/bam2sam" && export BAM2SAM
 
-  $ DATADIR="$TESTDIR/../../../data" && export DATADIR
+  $ DATADIR="$TESTDIR/../../data" && export DATADIR
   $ UNALIGNED_BAM="$DATADIR/polymerase/internal.hqregions.bam" && export UNALIGNED_BAM
   $ ALIGNED_BAM="$DATADIR/dataset/bam_mapping_1.bam" && export ALIGNED_BAM
 

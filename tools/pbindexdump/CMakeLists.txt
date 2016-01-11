@@ -36,12 +36,11 @@ create_pbbam_tool(
 
 # cram tests
 if (PacBioBAM_build_tests)
-    set(PbindexdumpTestsDir ${PacBioBAM_TestsDir}/src/tools/pbindexdump)
     add_test(
         NAME pbindexdump_CramTests
         WORKING_DIRECTORY ${PacBioBAM_TestsDir}/scripts
         COMMAND "python" cram.py
-            ${PbindexdumpTestsDir}/json.t
-            ${PbindexdumpTestsDir}/cpp.t
+            ${PacBioBAM_CramTestsDir}/pbindexdump_json.t
+            ${PacBioBAM_CramTestsDir}/pbindexdump_cpp.t
     )
 endif()

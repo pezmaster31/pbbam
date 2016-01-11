@@ -1,8 +1,8 @@
 Setup:
 
-  $ PBINDEXDUMP="$TESTDIR/../../../../bin/pbindexdump" && export PBINDEXDUMP
+  $ PBINDEXDUMP="$TESTDIR/../../../bin/pbindexdump" && export PBINDEXDUMP
 
-  $ DATADIR="$TESTDIR/../../../data" && export DATADIR
+  $ DATADIR="$TESTDIR/../../data" && export DATADIR
 
 Default settings (JSON):
 
