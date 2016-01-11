@@ -1,27 +1,28 @@
 
+set(PbindexSrcDir ${PacBioBAM_ToolsDir}/pbindex/src)
+
 # create version header
 set(PbIndex_VERSION ${PacBioBAM_VERSION})
 configure_file(
-    ${PacBioBAM_RootDir}/tools/pbindex/src/PbIndexVersion.h.in
-    ${PacBioBAM_RootDir}/tools/pbindex/src/PbIndexVersion.h
+    ${PbindexSrcDir}/PbIndexVersion.h.in
+    ${PbindexSrcDir}/PbIndexVersion.h
 )
 
-#pbindex sources
+# list source files
 set(PBINDEX_SOURCES
-    ${PacBioBAM_RootDir}/tools/pbindex/src/main.cpp
-    ${PacBioBAM_RootDir}/tools/pbindex/src/OptionParser.h
-    ${PacBioBAM_RootDir}/tools/pbindex/src/OptionParser.cpp
-    ${PacBioBAM_RootDir}/tools/pbindex/src/PbIndex.h
-    ${PacBioBAM_RootDir}/tools/pbindex/src/PbIndex.cpp
-    ${PacBioBAM_RootDir}/tools/pbindex/src/PbIndexVersion.h
+
+    ${ToolsCommonDir}/OptionParser.h
+    ${ToolsCommonDir}/OptionParser.cpp
+
+    ${PbindexSrcDir}/main.cpp
+    ${PbindexSrcDir}/PbIndex.h
+    ${PbindexSrcDir}/PbIndex.cpp
+    ${PbindexSrcDir}/PbIndexVersion.h
 )
 
 # build pbindex executable
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${PacBioBAM_CXX_FLAGS}")
-include_directories(${PacBioBAM_RootDir}/tools/pbindex/src ${PacBioBAM_INCLUDE_DIRS})
-add_executable(pbindex ${PBINDEX_SOURCES})
-set_target_properties(pbindex PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${PacBioBAM_BinDir}
+include(PbbamTool)
+create_pbbam_tool(
+    TARGET  pbindex
+    SOURCES ${PBINDEX_SOURCES}
 )
-target_link_libraries(pbindex pbbam)
-

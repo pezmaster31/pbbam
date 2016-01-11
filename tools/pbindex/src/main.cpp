@@ -35,7 +35,7 @@
 
 // Author: Derek Barnett
 
-#include "OptionParser.h"
+#include "../common/OptionParser.h"
 #include "PbIndex.h"
 #include "PbIndexVersion.h"
 #include <cassert>

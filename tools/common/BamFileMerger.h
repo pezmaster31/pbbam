@@ -35,19 +35,38 @@
 
 // Author: Derek Barnett
 
-#ifndef PBINDEXDUMP_H
-#define PBINDEXDUMP_H
+#ifndef BAMFILEMERGER_H
+#define BAMFILEMERGER_H
 
-namespace pbindexdump {
+#include <pbbam/ProgramInfo.h>
+#include <string>
+#include <vector>
 
-class Settings;
+namespace PacBio {
+namespace BAM {
+namespace common {
 
-class PbIndexDump
+class BamFileMerger
 {
 public:
-    static void Run(const Settings& settings);
+    BamFileMerger(const std::vector<std::string>& inputFilenames,
+                  const std::string& outputFilename,
+                  const PacBio::BAM::ProgramInfo& mergeProgram = PacBio::BAM::ProgramInfo(),
+                  bool createPbi = true);
+public:
+    void Merge(void);
+
+private:
+    std::vector<std::string> inputFilenames_;
+    std::string outputFilename_;
+    PacBio::BAM::ProgramInfo mergeProgram_;
+    bool createPbi_;
 };
 
-} // namespace pbindex
+} // namespace common
+} // namespace BAM
+} // namespace PacBio
 
-#endif // PBINDEXDUMP_H
+#include "BamFileMerger.inl"
+
+#endif // BAMFILEMERGER_H
