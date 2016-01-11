@@ -48,12 +48,18 @@
 #include <pbbam/EntireFileQuery.h>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <cstdio>
 #include <cstdlib>
 using namespace PacBio;
 using namespace PacBio::BAM;
+using namespace PacBio::BAM::tests;
 using namespace std;
+
+namespace PacBio {
+namespace BAM {
+namespace tests {
 
 struct Bam1Deleter
 {
@@ -84,77 +90,96 @@ struct BamHdrDeleter
 
 const string inputBamFn        = tests::Data_Dir + "/ex2.bam";
 const string goldStandardSamFn = tests::Data_Dir + "/ex2.sam";
-const string generatedBamFn    = tests::Data_Dir + "/generated.bam";
-const string generatedSamFn    = tests::Data_Dir + "/generated.sam";
+const string generatedBamFn    = "/tmp/generated.bam";
+const string generatedSamFn    = "/tmp/generated.sam";
+const vector<string> generatedFiles = { generatedBamFn, generatedSamFn };
 
 static inline
-int Samtools_Bam2Sam(const string& bamFilename,
-                     const string& samFilename)
+int RunBam2Sam(const string& bamFn,
+               const string& samFn,
+               const string& args = string())
 {
-    const std::string& convertArgs = string("view -h ") + bamFilename + string(" > ")  + samFilename;
-    const std::string& convertCommandLine = tests::Samtools_Bin + string(" ") + convertArgs;
-    return system(convertCommandLine.c_str());
+    stringstream s;
+    s << tests::Bam2Sam << " " << args << " " << bamFn << " > " << samFn;
+    return system(s.str().c_str());
 }
 
 static inline
-int Diff_Sam2Sam(const string& fn1,
-                 const string& fn2)
+int RunDiff(const string& fn1, const string& fn2)
 {
-    const std::string& diffCommandLine = string("diff ") + fn1 + string(" ") + fn2;
-    return system(diffCommandLine.c_str());
+    stringstream s;
+    s << "diff " << fn1 << " " << fn2;
+    return system(s.str().c_str());
 }
 
 static inline
-void RemoveGeneratedFiles(const string& fn1,
-                          const string& fn2)
+void Remove(const vector<string>& files)
 {
-    remove(fn1.c_str());
-    remove(fn2.c_str());
+    for (const auto& fn : files)
+        remove(fn.c_str());
 }
 
-// sanity check for rest of tests below
-TEST(EndToEndTest, ReadPureHtslib_WritePureHtslib)
+static inline
+void CheckGeneratedOutput(void)
 {
-    // open input BAM file
-    PBBAM_SHARED_PTR<samFile> inputBam(sam_open(inputBamFn.c_str(), "r"), SamFileDeleter());
-    EXPECT_TRUE(inputBam != 0);
-    PBBAM_SHARED_PTR<bam_hdr_t> header(sam_hdr_read(inputBam.get()), BamHdrDeleter());
-
-    // open output BAM file
-    PBBAM_SHARED_PTR<samFile> outputBam(sam_open(generatedBamFn.c_str(), "wb"), SamFileDeleter());
-    sam_hdr_write(outputBam.get(), header.get());
-
-    // copy BAM file
-    PBBAM_SHARED_PTR<bam1_t> record(bam_init1(), Bam1Deleter());
-    while (sam_read1(inputBam.get(), header.get(), record.get()) >= 0)
-        sam_write1(outputBam.get(), header.get(), record.get());
-
-    // need to close files before comparing (to flush any buffers)
-    inputBam.reset();
-    outputBam.reset();
-
     // convert to sam & diff against gold standard
-
-    // TODO: disabled for now - need to replace non-PB BAM files in test cases
-
-//    const int convertRet = Samtools_Bam2Sam(generatedBamFn, generatedSamFn);
-//    const int diffRet    = Diff_Sam2Sam(goldStandardSamFn, generatedSamFn);
-//    EXPECT_EQ(0, convertRet);
-//    EXPECT_EQ(0, diffRet);
+    const int convertRet = RunBam2Sam(generatedBamFn, generatedSamFn);
+    const int diffRet    = RunDiff(goldStandardSamFn, generatedSamFn);
+    EXPECT_EQ(0, convertRet);
+    EXPECT_EQ(0, diffRet);
 
     // clean up
-    RemoveGeneratedFiles(generatedBamFn, generatedSamFn);
+    Remove(generatedFiles);
 }
 
-TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_SingleThread)
+} // namespace tests
+} // namespace BAM
+} // namespace PacBio
+
+// sanity check for rest of tests below
+TEST(EndToEndTest, ReadAndWrite_PureHtslib)
+{
+    { // scoped to force flush & close before conversion/diff
+
+        // open files
+
+        unique_ptr<samFile, SamFileDeleter> inWrapper(sam_open(inputBamFn.c_str(), "r"));
+        samFile* in = inWrapper.get();
+        ASSERT_TRUE(in);
+
+        unique_ptr<samFile, SamFileDeleter> outWrapper(sam_open(generatedBamFn.c_str(), "wb"));
+        samFile* out = outWrapper.get();
+        ASSERT_TRUE(out);
+
+        // fetch & write header
+
+        unique_ptr<bam_hdr_t, BamHdrDeleter> headerWrapper(sam_hdr_read(in));
+        bam_hdr_t* hdr = headerWrapper.get();
+        ASSERT_TRUE(hdr);
+        ASSERT_EQ(0, sam_hdr_write(out, hdr));
+
+        // fetch & write records
+
+        unique_ptr<bam1_t, Bam1Deleter> record(bam_init1());
+        bam1_t* b = record.get();
+        ASSERT_TRUE(b);
+
+        while (sam_read1(in, hdr, b) >= 0)
+            sam_write1(out, hdr, b);
+    }
+
+    CheckGeneratedOutput();
+}
+
+TEST(EndToEndTest, ReadAndWrite_SingleThread)
 {
     EXPECT_NO_THROW(
     {
         // open input BAM file
-        BamFile bamFile(inputBamFn);
+        BamFile bamFile(tests::inputBamFn);
 
         // open output BAM file
-        BamWriter writer(generatedBamFn, bamFile.Header(), BamWriter::DefaultCompression, 1);
+        BamWriter writer(tests::generatedBamFn, bamFile.Header(), BamWriter::DefaultCompression, 1);
 
         // copy BAM file
         EntireFileQuery entireFile(bamFile);
@@ -162,17 +187,10 @@ TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_SingleThread)
             writer.Write(record);
     });
 
-    // convert to sam & diff against gold standard
-    const int convertRet = Samtools_Bam2Sam(generatedBamFn, generatedSamFn);
-    const int diffRet    = Diff_Sam2Sam(goldStandardSamFn, generatedSamFn);
-    EXPECT_EQ(0, convertRet);
-    EXPECT_EQ(0, diffRet);
-
-    // clean up
-    RemoveGeneratedFiles(generatedBamFn, generatedSamFn);
+    CheckGeneratedOutput();
 }
 
-TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_APIDefaultThreadCount)
+TEST(EndToEndTest, ReadAndWrite_APIDefaultThreadCount)
 {
     EXPECT_NO_THROW(
     {
@@ -188,18 +206,10 @@ TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_APIDefaultThreadCount)
             writer.Write(record);
     });
 
-    // convert to sam & diff against gold standard
-    const int convertRet = Samtools_Bam2Sam(generatedBamFn, generatedSamFn);
-    const int diffRet    = Diff_Sam2Sam(goldStandardSamFn, generatedSamFn);
-    EXPECT_EQ(0, convertRet);
-    EXPECT_EQ(0, diffRet);
-
-    // clean up
-    RemoveGeneratedFiles(generatedBamFn, generatedSamFn);
-
+    CheckGeneratedOutput();
 }
 
-TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_SystemDefaultThreadCount)
+TEST(EndToEndTest, ReadAndWrite_SystemDefaultThreadCount)
 {
     EXPECT_NO_THROW(
     {
@@ -207,7 +217,10 @@ TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_SystemDefaultThreadCount)
         BamFile bamFile(inputBamFn);
 
         // open output BAM file
-        BamWriter writer(generatedBamFn, bamFile.Header(), BamWriter::DefaultCompression, 0);
+        BamWriter writer(generatedBamFn,
+                         bamFile.Header(),
+                         BamWriter::DefaultCompression,
+                         0);
 
         // copy BAM file
         EntireFileQuery entireFile(bamFile);
@@ -215,17 +228,10 @@ TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_SystemDefaultThreadCount)
             writer.Write(record);
     });
 
-    // convert to sam & diff against gold standard
-    const int convertRet = Samtools_Bam2Sam(generatedBamFn, generatedSamFn);
-    const int diffRet    = Diff_Sam2Sam(goldStandardSamFn, generatedSamFn);
-    EXPECT_EQ(0, convertRet);
-    EXPECT_EQ(0, diffRet);
-
-    // clean up
-    RemoveGeneratedFiles(generatedBamFn, generatedSamFn);
+    CheckGeneratedOutput();
 }
 
-TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_UserThreadCount)
+TEST(EndToEndTest, ReadAndWrite_UserThreadCount)
 {
     EXPECT_NO_THROW(
     {
@@ -233,7 +239,10 @@ TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_UserThreadCount)
         BamFile bamFile(inputBamFn);
 
         // open output BAM file
-        BamWriter writer(generatedBamFn, bamFile.Header(), BamWriter::DefaultCompression, 6);
+        BamWriter writer(generatedBamFn,
+                         bamFile.Header(),
+                         BamWriter::DefaultCompression,
+                         3);
 
         // copy BAM file
         EntireFileQuery entireFile(bamFile);
@@ -241,12 +250,5 @@ TEST(EndToEndTest, ReadBamRecord_WriteBamRecord_UserThreadCount)
             writer.Write(record);
     });
 
-    // convert to sam & diff against gold standard
-    const int convertRet = Samtools_Bam2Sam(generatedBamFn, generatedSamFn);
-    const int diffRet    = Diff_Sam2Sam(goldStandardSamFn, generatedSamFn);
-    EXPECT_EQ(0, convertRet);
-    EXPECT_EQ(0, diffRet);
-
-    // clean up
-    RemoveGeneratedFiles(generatedBamFn, generatedSamFn);
+    CheckGeneratedOutput();
 }
