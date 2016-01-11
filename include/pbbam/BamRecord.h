@@ -647,14 +647,14 @@ public:
     ///
     std::vector<float> Pkmid(Orientation orientation = Orientation::NATIVE) const;
 
-    /// \brief Fetches this record's Pkmean2 values ("pb" tag).
+    /// \brief Fetches this record's Pkmean2 values ("pi" tag).
     ///
     /// \param[in] orientation     Orientation of output.
     /// \returns Pkmean as vector<float> object
     ///
     std::vector<float> Pkmean2(Orientation orientation = Orientation::NATIVE) const;
 
-    /// \brief Fetches this record's Pkmid2 values ("pn" tag).
+    /// \brief Fetches this record's Pkmid2 values ("ps" tag).
     ///
     /// \param[in] orientation     Orientation of output.
     /// \returns Pkmid as vector<float> object
@@ -990,28 +990,28 @@ public:
     ///
     BamRecord& Pkmid(const std::vector<uint16_t>& encodedPhotons);
 
-    /// \brief Sets this record's Pkmean2 values ("pn" tag).
+    /// \brief Sets this record's Pkmean2 values ("ps" tag).
     ///
     /// \param[in] photons
     /// \returns reference to this record
     ///
     BamRecord& Pkmean2(const std::vector<float>& photons);
 
-    /// \brief Sets this record's Pkmean2 values ("pn" tag).
+    /// \brief Sets this record's Pkmean2 values ("ps" tag).
     ///
     /// \param[in] encodedPhotons
     /// \returns reference to this record
     ///
     BamRecord& Pkmean2(const std::vector<uint16_t>& encodedPhotons);
 
-    /// \brief Sets this record's Pkmid2 values ("pb" tag).
+    /// \brief Sets this record's Pkmid2 values ("pi" tag).
     ///
     /// \param[in] photons
     /// \returns reference to this record
     ///
     BamRecord& Pkmid2(const std::vector<float>& photons);
 
-    /// \brief Sets this record's Pkmid2 values ("pb" tag).
+    /// \brief Sets this record's Pkmid2 values ("pi" tag).
     ///
     /// \param[in] encodedPhotons
     /// \returns reference to this record
