@@ -9,6 +9,7 @@ utilities for working with PacBio indices (".pbi" files).
 .. toctree::
    :maxdepth: 1
 
+   tools/bam2sam
    tools/pbindex
    tools/pbindexdump
 
