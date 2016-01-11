@@ -37,9 +37,6 @@ before_install:
   # prep htslib
   - "cd .. && git clone https://github.com/PacificBiosciences/htslib.git && cd htslib && make && sudo make install; cd $TRAVIS_BUILD_DIR"
 
-  # prep samtools
-  - sudo apt-get install -y -qq samtools
-
   # prep GoogleTest 
   - sudo apt-get install -y -qq libgtest-dev
 

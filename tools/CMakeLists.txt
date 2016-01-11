@@ -10,7 +10,7 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${PacBioBAM_CXX_FLAGS}")
 
 # tools
-i#add_subdirectory(bam2sam)
+add_subdirectory(bam2sam)
 add_subdirectory(pbindex)
 add_subdirectory(pbindexdump)
 #add_subdirectory(pbmerge)
