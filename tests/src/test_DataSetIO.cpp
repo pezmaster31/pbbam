@@ -1433,3 +1433,73 @@ TEST(DataSetIOTest, InspectMalformedXml)
     EXPECT_EQ(expected, s.str());
 }
 
+TEST(DataSetIOTest, RelativePathCarriedThroughOk_FromString)
+{
+    const string inputXml =
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+        "<pbds:AlignmentSet "
+            "CreatedAt=\"2015-01-27T09:00:01\" "
+            "MetaType=\"PacBio.DataSet.AlignmentSet\" "
+            "Name=\"DataSet_AlignmentSet\" "
+            "Tags=\"barcode moreTags mapping mytags\" "
+            "TimeStampedName=\"biosample_2015-08-19T15:39:36.331-07:00\" "
+            "UniqueId=\"b095d0a3-94b8-4918-b3af-a3f81bbe519c\" "
+            "Version=\"2.3.0\" "
+            "xmlns=\"http://pacificbiosciences.com/PacBioDataModel.xsd\" "
+            "xmlns:pbds=\"http://pacificbiosciences.com/PacBioDatasets.xsd\" "
+            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+            "xsi:schemaLocation=\"http://pacificbiosciences.com/PacBioDataModel.xsd\">\n"
+        "\t<pbbase:ExternalResources>\n"
+        "\t\t<pbbase:ExternalResource "
+                "Description=\"Points to an example Alignments BAM file.\" "
+                "MetaType=\"AlignmentFile.AlignmentBamFile\" "
+                "Name=\"Third Alignments BAM\" "
+                "ResourceId=\"../path/to/resource1.bam\" "
+                "Tags=\"Example\">\n"
+        "\t\t\t<pbbase:FileIndices>\n"
+        "\t\t\t\t<pbbase:FileIndex "
+                    "MetaType=\"PacBio.Index.PacBioIndex\" "
+                    "ResourceId=\"../path/to/resource1.bam.pbi\" />\n"
+        "\t\t\t</pbbase:FileIndices>\n"
+        "\t\t</pbbase:ExternalResource>\n"
+        "\t\t<pbbase:ExternalResource "
+                "Description=\"Points to another example Alignments BAM file, by relative path.\" "
+                "MetaType=\"AlignmentFile.AlignmentBamFile\" "
+                "Name=\"Fourth Alignments BAM\" "
+                "ResourceId=\"../path/to/resource2.bam\" "
+                "Tags=\"Example\">\n"
+        "\t\t\t<pbbase:FileIndices>\n"
+        "\t\t\t\t<pbbase:FileIndex "
+                    "MetaType=\"PacBio.Index.PacBioIndex\" "
+                    "ResourceId=\"../path/to/resource2.bam.pbi\" />\n"
+        "\t\t\t</pbbase:FileIndices>\n"
+        "\t\t</pbbase:ExternalResource>\n"
+        "\t</pbbase:ExternalResources>\n"
+        "</pbds:AlignmentSet>\n";
+
+    auto dataset = DataSet::FromXml(inputXml);
+
+    stringstream stream;
+    dataset.SaveToStream(stream);
+    auto outputXml = stream.str();
+
+    EXPECT_EQ(inputXml, outputXml);
+}
+
+TEST(DataSetIOTest, RelativePathCarriedThroughOk_FromFile)
+{
+    DataSet dataset(tests::Data_Dir + "/relative/relative.xml");
+    auto resources = dataset.ExternalResources();
+    EXPECT_EQ("./a/test.bam",  resources[0].ResourceId());
+    EXPECT_EQ("./b/test1.bam", resources[1].ResourceId());
+    EXPECT_EQ("./b/test2.bam", resources[2].ResourceId());
+
+    stringstream out;
+    dataset.SaveToStream(out);
+
+    auto newDataset = DataSet::FromXml(out.str());
+    auto newResources = newDataset.ExternalResources();
+    EXPECT_EQ("./a/test.bam",  newResources[0].ResourceId());
+    EXPECT_EQ("./b/test1.bam", newResources[1].ResourceId());
+    EXPECT_EQ("./b/test2.bam", newResources[2].ResourceId());
+}
