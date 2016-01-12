@@ -137,46 +137,30 @@ TEST(GenomicIntervalQueryTest, NonConstBamRecord)
     });
 }
 
-//TEST(GenomicIntervalQueryTest, WorksWithBamRecordImpl)
-//{
-//    // open input BAM file
-//    BamFile bamFile(inputBamFn);
-//    EXPECT_TRUE(bamFile);
+TEST(GenomicIntervalQueryTest,  MissingBaiShouldThrow)
+{
+    GenomicInterval interval("seq1", 0, 100);
+    const string phi29Bam = tests::Data_Dir + "/phi29.bam";
+    const string hasBaiBam = tests::Data_Dir + "/dataset/bam_mapping1.bam";
 
-//    const int id = bamFile.ReferenceId("seq1");
-//    EXPECT_TRUE(id != -1);
+    { // single file, missing BAI
 
-//    // count records
-//    int count = 0;
-//    GenomicInterval interval(id, 0, 100);
-//    GenomicIntervalQuery query(interval, bamFile);
-//    EXPECT_TRUE(query);
-//    for (const BamRecordImpl& record : query) {
-//        (void)record;
-//        ++count;
-//    }
-//    EXPECT_EQ(39, count);
-//}
+        EXPECT_THROW(GenomicIntervalQuery query(interval, phi29Bam), std::runtime_error);
+    }
 
-//TEST(GenomicIntervalQueryTest, WorksWithNonConstBamRecordImpl)
-//{
-//    // open input BAM file
-//    BamFile bamFile(inputBamFn);
-//    EXPECT_TRUE(bamFile);
+    { // from dataset, all missing BAI
 
-//    const int id = bamFile.ReferenceId("seq1");
-//    EXPECT_TRUE(id != -1);
+        DataSet ds;
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.SubreadBamFile", phi29Bam));
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.SubreadBamFile", phi29Bam));
+        EXPECT_THROW(GenomicIntervalQuery query(interval, ds), std::runtime_error);
+    }
 
-//    // count records
-//    int count = 0;
-//    GenomicInterval interval(id, 0, 100);
-//    GenomicIntervalQuery query(interval, bamFile);
-//    EXPECT_TRUE(query);
-//    for (BamRecordImpl& record : query) {
-//        (void)record;
-//        ++count;
-//    }
-//    EXPECT_EQ(39, count);
-//}
+    { // from dataset, mixed BAI presence
 
-// add special cases as needed
+        DataSet ds;
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.SubreadBamFile", phi29Bam));
+        ds.ExternalResources().Add(ExternalResource("PacBio.AlignmentFile.AlignmentBamFile", hasBaiBam));
+        EXPECT_THROW(GenomicIntervalQuery query(interval, ds), std::runtime_error);
+    }
+}

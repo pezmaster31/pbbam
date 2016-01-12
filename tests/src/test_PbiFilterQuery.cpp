@@ -215,3 +215,31 @@ TEST(PbiFilterQueryTest, ZmwRangeFromDatasetOk)
         EXPECT_EQ(1220, count);
     }
 }
+
+TEST(PbiFilterQueryTest, MissingPbiShouldThrow)
+{
+    const PbiFilter filter{ PbiZmwFilter{31883} };
+    const string phi29Bam = tests::Data_Dir + "/phi29.bam";
+    const string hasPbiBam = tests::Data_Dir + "/polymerase/production.scraps.bam";
+
+    { // single file, missing PBI
+
+        EXPECT_THROW(PbiFilterQuery(filter, phi29Bam), std::runtime_error);
+    }
+
+    { // from dataset, all missing PBI
+
+        DataSet ds;
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.SubreadBamFile", phi29Bam));
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.SubreadBamFile", phi29Bam));
+        EXPECT_THROW(PbiFilterQuery(filter, ds), std::runtime_error);
+    }
+
+    { // from dataset, mixed PBI presence
+
+        DataSet ds;
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.SubreadBamFile", phi29Bam));
+        ds.ExternalResources().Add(ExternalResource("PacBio.SubreadFile.ScrapsBamFile", hasPbiBam));
+        EXPECT_THROW(PbiFilterQuery(filter, ds), std::runtime_error);
+    }
+}

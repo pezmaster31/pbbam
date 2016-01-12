@@ -10,6 +10,11 @@ series.
 
 ## Active
 
+### Changed
+- PbiFilterQuery (and any other PBI-backed query, e.g. ZmwQuery ) now throws if PBI file(s) missing 
+insted of returning empty result.
+- GenomicIntervalQuery now throws if BAI file(s) missing instead of returning empty result.  
+
 ## [0.4.4] - 2016-01-07
 
 ### Added
