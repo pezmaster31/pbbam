@@ -10,10 +10,14 @@ series.
 
 ## Active
 
+## [0.4.5] - 2016-01-14
+
 ### Changed
 - PbiFilterQuery (and any other PBI-backed query, e.g. ZmwQuery ) now throws if PBI file(s) missing 
 insted of returning empty result.
 - GenomicIntervalQuery now throws if BAI file(s) missing instead of returning empty result.  
+- BamFile will throw if file is truncated (e.g. missing the EOF block). Disable by defining 
+PBBAM_NO_CHECK_EOF .
 
 ## [0.4.4] - 2016-01-07
 

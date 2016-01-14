@@ -168,3 +168,10 @@ TEST(BamFileTest, RelativePathFofnOk)
 
     ASSERT_EQ(0, chdir(cwd.c_str()));
 }
+
+TEST(BamFileTest, TruncatedFileThrowsOk)
+{
+    const string fn = tests::Data_Dir + "/truncated.bam";
+    EXPECT_THROW(BamFile file(fn), std::runtime_error);
+}
+

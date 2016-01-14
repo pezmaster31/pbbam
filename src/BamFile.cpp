@@ -44,10 +44,8 @@
 #include "FileUtils.h"
 #include "MemoryUtils.h"
 #include <htslib/sam.h>
-
-#include <iostream>
-
 #include <memory>
+#include <sstream>
 #include <cassert>
 #include <sys/stat.h>
 using namespace PacBio;
@@ -65,10 +63,7 @@ public:
         : filename_(fn)
         , firstAlignmentOffset_(-1)
     {
-        // update verbosity
-        //
-        //
-
+        // ensure we've updated htslib verbosity with requested verbosity here
         hts_verbose = ( PacBio::BAM::HtslibVerbosity == -1 ? 0 : PacBio::BAM::HtslibVerbosity);
 
         // attempt open
@@ -77,6 +72,23 @@ public:
             throw std::runtime_error(string("could not open BAM file: ") + filename_);
         if (f->format.format != bam)
             throw std::runtime_error("expected BAM, unknown format");
+
+#ifndef PBBAM_NO_CHECK_EOF
+        // sanity check on file
+        const int eofCheck = bgzf_check_EOF(f->fp.bgzf);
+        if (eofCheck <= 0 ) {
+            // 1:  EOF present & correct
+            // 2:  not seekable (e.g. reading from stdin)
+            // 0:  EOF absent
+            // -1: some other error
+            stringstream e;
+            if (eofCheck == 0)
+                e << fn << " : is missing EOF block" << endl;
+            else
+                e << fn << " : unknown error while checking EOF block" << endl;
+            throw std::runtime_error(e.str());
+        }
+#endif
 
         // attempt fetch header
         std::unique_ptr<bam_hdr_t, internal::HtslibHeaderDeleter> hdr(sam_hdr_read(f.get()));

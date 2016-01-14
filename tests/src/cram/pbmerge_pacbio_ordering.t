@@ -66,7 +66,7 @@ Normal Merge:
   @PG\tID:baz2bam-0.15.0\tPN:baz2bam\tVN:0.15.0 (esc)
   @PG\tID:bazFormat-0.3.0\tPN:bazFormat\tVN:0.3.0 (esc)
   @PG\tID:bazwriter-0.15.0\tPN:bazwriter\tVN:0.15.0 (esc)
-  @PG\tID:pbmerge-0.4.4\tPN:pbmerge\tVN:0.4.4 (esc)
+  @PG\tID:pbmerge-0.4.5\tPN:pbmerge\tVN:0.4.5 (esc)
 
   $ $BAM2SAM --no-header $MERGED_BAM | cut -f 1
   ArminsFakeMovie/100000/0_2659
@@ -107,7 +107,7 @@ Shuffle Input:
   @PG\tID:baz2bam-0.15.0\tPN:baz2bam\tVN:0.15.0 (esc)
   @PG\tID:bazFormat-0.3.0\tPN:bazFormat\tVN:0.3.0 (esc)
   @PG\tID:bazwriter-0.15.0\tPN:bazwriter\tVN:0.15.0 (esc)
-  @PG\tID:pbmerge-0.4.4\tPN:pbmerge\tVN:0.4.4 (esc)
+  @PG\tID:pbmerge-0.4.5\tPN:pbmerge\tVN:0.4.5 (esc)
 
   $ $BAM2SAM --no-header $MERGED_BAM | cut -f 1
   ArminsFakeMovie/100000/0_2659
@@ -148,7 +148,7 @@ Explicit Output Filename (also enables PBI):
   @PG\tID:baz2bam-0.15.0\tPN:baz2bam\tVN:0.15.0 (esc)
   @PG\tID:bazFormat-0.3.0\tPN:bazFormat\tVN:0.3.0 (esc)
   @PG\tID:bazwriter-0.15.0\tPN:bazwriter\tVN:0.15.0 (esc)
-  @PG\tID:pbmerge-0.4.4\tPN:pbmerge\tVN:0.4.4 (esc)
+  @PG\tID:pbmerge-0.4.5\tPN:pbmerge\tVN:0.4.5 (esc)
 
   $ $BAM2SAM --no-header $MERGED_BAM | cut -f 1
   ArminsFakeMovie/100000/0_2659
@@ -193,7 +193,7 @@ Explicit Output Filename (with disabled PBI):
   @PG\tID:baz2bam-0.15.0\tPN:baz2bam\tVN:0.15.0 (esc)
   @PG\tID:bazFormat-0.3.0\tPN:bazFormat\tVN:0.3.0 (esc)
   @PG\tID:bazwriter-0.15.0\tPN:bazwriter\tVN:0.15.0 (esc)
-  @PG\tID:pbmerge-0.4.4\tPN:pbmerge\tVN:0.4.4 (esc)
+  @PG\tID:pbmerge-0.4.5\tPN:pbmerge\tVN:0.4.5 (esc)
 
   $ $BAM2SAM --no-header $MERGED_BAM | cut -f 1
   ArminsFakeMovie/100000/0_2659
