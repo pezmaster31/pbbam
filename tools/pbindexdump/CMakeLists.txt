@@ -4,26 +4,15 @@ set(PbindexdumpSrcDir ${PacBioBAM_ToolsDir}/pbindexdump/src)
 # create version header
 set(PbIndexDump_VERSION ${PacBioBAM_VERSION})
 configure_file(
-    ${PbindexdumpSrcDir}/PbIndexDumpVersion.h.in
-    ${PbindexdumpSrcDir}/PbIndexDumpVersion.h
+    ${PbindexdumpSrcDir}/PbIndexDumpVersion.h.in PbIndexDumpVersion.h @ONLY
 )
 
 # list source files
 set(PBINDEXDUMP_SOURCES
-
-    ${ToolsCommonDir}/OptionParser.h
     ${ToolsCommonDir}/OptionParser.cpp
-
     ${PbindexdumpSrcDir}/CppFormatter.cpp
-    ${PbindexdumpSrcDir}/CppFormatter.h
-    ${PbindexdumpSrcDir}/IFormatter.h
     ${PbindexdumpSrcDir}/JsonFormatter.cpp
-    ${PbindexdumpSrcDir}/JsonFormatter.h
     ${PbindexdumpSrcDir}/PbIndexDump.cpp
-    ${PbindexdumpSrcDir}/PbIndexDump.h
-    ${PbindexdumpSrcDir}/PbIndexDumpVersion.h
-    ${PbindexdumpSrcDir}/Settings.h
-    ${PbindexdumpSrcDir}/json.hpp
     ${PbindexdumpSrcDir}/main.cpp
 )
 

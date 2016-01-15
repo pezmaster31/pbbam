@@ -4,18 +4,12 @@ set(PbmergeSrcDir ${PacBioBAM_ToolsDir}/pbmerge/src)
 # create version header
 set(PbMerge_VERSION ${PacBioBAM_VERSION})
 configure_file(
-    ${PbmergeSrcDir}/PbMergeVersion.h.in
-    ${PbmergeSrcDir}/PbMergeVersion.h
+    ${PbmergeSrcDir}/PbMergeVersion.h.in PbMergeVersion.h @ONLY
 )
 
 # list source files
 set(PBMERGE_SOURCES
-
-    ${ToolsCommonDir}/BamFileMerger.h
-    ${ToolsCommonDir}/BamFileMerger.inl
-    ${ToolsCommonDir}/OptionParser.h
     ${ToolsCommonDir}/OptionParser.cpp
-
     ${PbmergeSrcDir}/main.cpp
 )
 
