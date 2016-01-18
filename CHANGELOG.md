@@ -10,6 +10,10 @@ series.
 
 ## Active
 
+### Fixed
+- Fixed mishandling of relative BAM filenames in the filename constructor for DataSet 
+(e.g. DataSet ds("../data.bam")).
+
 ## [0.4.5] - 2016-01-14
 
 ### Changed

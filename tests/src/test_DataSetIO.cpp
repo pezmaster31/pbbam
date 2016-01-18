@@ -40,6 +40,7 @@
 #endif
 
 #include "TestData.h"
+#include "../src/FileUtils.h"
 #include <gtest/gtest.h>
 #include <pbbam/DataSet.h>
 #include <pbbam/internal/DataSetElement.h>
@@ -48,6 +49,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <unistd.h>
 using namespace PacBio;
 using namespace PacBio::BAM;
 using namespace std;
@@ -88,6 +90,10 @@ static void TestSubread1Xml(void);
 static void TestSubread2Xml(void);
 static void TestSubread3Xml(void);
 static void TestTransformedXml(void);
+
+static inline
+void changeCurrentDirectory(const std::string& dir)
+{ ASSERT_EQ(0, chdir(dir.c_str())); }
 
 TEST(DataSetIOTest, FromBamFilename)
 {
@@ -1503,3 +1509,25 @@ TEST(DataSetIOTest, RelativePathCarriedThroughOk_FromFile)
     EXPECT_EQ("./b/test1.bam", newResources[1].ResourceId());
     EXPECT_EQ("./b/test2.bam", newResources[2].ResourceId());
 }
+
+TEST(DataSetIOTest, DataSetFromRelativeBamFilename)
+{
+    // cache initial directory and move to location so we can test relatvie filename ok
+    const string startingDirectory = internal::FileUtils::CurrentWorkingDirectory();
+
+    const string targetDirectory = tests::Data_Dir + "/dataset";
+    changeCurrentDirectory(targetDirectory);
+    ASSERT_EQ(targetDirectory, internal::FileUtils::CurrentWorkingDirectory());
+
+    EXPECT_NO_THROW(
+    {
+        const string relativeBamFn = "../phi29.bam";
+        const DataSet ds(relativeBamFn);
+        const auto& files = ds.BamFiles();
+        EXPECT_EQ(1, files.size());
+    });
+
+    // restore working directory
+    changeCurrentDirectory(startingDirectory);
+}
+
