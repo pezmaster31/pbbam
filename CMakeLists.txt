@@ -13,6 +13,7 @@ set(PacBioBAM_VERSION
 )
 
 # list build-time options
+option(PacBioBAM_build_coverage "Build PacBioBAM for coverage stats."                   OFF)
 option(PacBioBAM_build_docs    "Build PacBioBAM's API documentation."                   ON)
 option(PacBioBAM_build_tests   "Build PacBioBAM's unit tests."                          ON)
 option(PacBioBAM_build_shared  "Build PacBioBAM as shared library as well."             OFF)
@@ -136,6 +137,11 @@ if (MSVC)
     set(PacBioBAM_CXX_FLAGS "/Wall")
 else()
     set(PacBioBAM_CXX_FLAGS "-std=c++11 -Wall -Wno-sign-compare")
+endif()
+
+# if coverage requested
+if(PacBioBAM_build_coverage)
+    set(PacBioBAM_CXX_FLAGS "${PacBioBAM_CXX_FLAGS} -fprofile-arcs -ftest-coverage"
 endif()
 
 # NOTE: -Wno-unused-local-typedefs used to quash clang warnings w/ Boost

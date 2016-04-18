@@ -39,17 +39,23 @@ before_install:
 
   # prep GoogleTest 
   - sudo apt-get install -y -qq libgtest-dev
+  
+  # prep coveralls 
+  - pip install --user cpp-coveralls
 
 before_script:
   # run cmake
   - mkdir build 
   - cd build
-  - cmake .. -DGTEST_SRC_DIR=/usr/src/gtest -DCMAKE_BUILD_TYPE=Debug
+  - cmake .. -DPacBioBAM_build_coverage=ON -DGTEST_SRC_DIR=/usr/src/gtest -DCMAKE_BUILD_TYPE=Debug
     
 script:
   # build & test
   - make -j 3
   - make test
+  
+  # publish coverage report
+  - coveralls --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp' --exclude-pattern "/usr/.*" --exclude build/CMakeFiles --exclude tests/src --exclude src/pugixml -r $TRAVIS_BUILD_DIR -b $TRAVIS_BUILD_DIR/build > /dev/null
 
 branches:
   only:
