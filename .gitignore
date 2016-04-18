@@ -13,4 +13,3 @@ lib/
 tests/bin/test_pbbam
 tests/data/test_group_query/group.fofn
 tests/src/TestData.h
-
