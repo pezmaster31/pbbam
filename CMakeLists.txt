@@ -141,7 +141,7 @@ endif()
 
 # if coverage requested
 if(PacBioBAM_build_coverage)
-    set(PacBioBAM_CXX_FLAGS "${PacBioBAM_CXX_FLAGS} -fprofile-arcs -ftest-coverage"
+    set(PacBioBAM_CXX_FLAGS "${PacBioBAM_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
 
 # NOTE: -Wno-unused-local-typedefs used to quash clang warnings w/ Boost
