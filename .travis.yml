@@ -2,8 +2,6 @@ language: cpp
 compiler:
   - gcc
 
-# edit
- 
 before_install:
 
   # Travis's default installs of gcc, boost, & cmake currently lag behind the minimums we need.
@@ -43,7 +41,7 @@ before_install:
   - sudo apt-get install -y -qq libgtest-dev
   
   # prep coveralls 
-  - pip install --user cpp-coveralls
+  - pip install --user cpp-coveralls pyopenssl ndg-httpsclient pyasn1
 
 before_script:
   # run cmake
