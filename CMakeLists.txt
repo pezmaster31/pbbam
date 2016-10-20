@@ -3,7 +3,7 @@
 ########################################################################
 
 cmake_policy(SET CMP0048 NEW)  # lets us set version in project()
-project(PacBioBAM VERSION 0.5.0 LANGUAGES CXX C)
+project(PacBioBAM VERSION 0.7.0 LANGUAGES CXX C)
 cmake_minimum_required(VERSION 3.0)
 
 # project name & version
@@ -103,8 +103,12 @@ set(PacBioBAM_BinDir        ${PacBioBAM_OutputDir}/bin)
 set(PacBioBAM_LibDir        ${PacBioBAM_OutputDir}/lib)
 set(PacBioBAM_ThirdPartyDir ${PacBioBAM_RootDir}/third-party)
 
+set(GeneratedDir ${CMAKE_BINARY_DIR}/generated)
+set(GeneratedTestDataDir ${GeneratedDir}/data)
 file(MAKE_DIRECTORY ${PacBioBAM_BinDir})
 file(MAKE_DIRECTORY ${PacBioBAM_LibDir})
+file(MAKE_DIRECTORY ${GeneratedDir})
+file(MAKE_DIRECTORY ${GeneratedTestDataDir})
 
 # use some custom Find*, Use* cmake modules
 list(APPEND CMAKE_MODULE_PATH "${PacBioBAM_RootDir}/cmake")

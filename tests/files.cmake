@@ -27,6 +27,7 @@ set( PacBioBAMTest_CPP
     ${PacBioBAM_TestsDir}/src/test_DataSetXsd.cpp
     ${PacBioBAM_TestsDir}/src/test_EndToEnd.cpp
     ${PacBioBAM_TestsDir}/src/test_EntireFileQuery.cpp
+    ${PacBioBAM_TestsDir}/src/test_Fasta.cpp
     ${PacBioBAM_TestsDir}/src/test_FileUtils.cpp
     ${PacBioBAM_TestsDir}/src/test_Frames.cpp
     ${PacBioBAM_TestsDir}/src/test_GenomicIntervalQuery.cpp
@@ -37,8 +38,10 @@ set( PacBioBAMTest_CPP
     ${PacBioBAM_TestsDir}/src/test_PbiFilterQuery.cpp
     ${PacBioBAM_TestsDir}/src/test_QNameQuery.cpp
     ${PacBioBAM_TestsDir}/src/test_QualityValues.cpp
+    ${PacBioBAM_TestsDir}/src/test_Pulse2BaseCache.cpp
     ${PacBioBAM_TestsDir}/src/test_ReadAccuracyQuery.cpp
     ${PacBioBAM_TestsDir}/src/test_ReadGroupInfo.cpp
+    ${PacBioBAM_TestsDir}/src/test_SamWriter.cpp
     ${PacBioBAM_TestsDir}/src/test_SequenceUtils.cpp
     ${PacBioBAM_TestsDir}/src/test_StringUtils.cpp
     ${PacBioBAM_TestsDir}/src/test_SubreadLengthQuery.cpp

@@ -35,7 +35,7 @@
 //
 // File Description
 /// \file BamRecord.inl
-/// \brief Inline implementations for the BamRecord & BamRecordView classes.
+/// \brief Inline implementations for the BamRecord class.
 //
 // Author: Derek Barnett
 
@@ -81,86 +81,6 @@ inline BamRecord BamRecord::Mapped(const int32_t referenceId,
     result.Map(referenceId, refStart, strand, cigar, mappingQuality);
     return result;
 }
-
-
-inline BamRecordView::BamRecordView(const BamRecord& record,
-                                    const Orientation orientation,
-                                    const bool aligned,
-                                    const bool exciseSoftClips)
-    : record_(record)
-    , orientation_(orientation)
-    , aligned_(aligned)
-    , exciseSoftClips_(exciseSoftClips)
-{ }
-
-inline QualityValues BamRecordView::AltLabelQVs(void) const
-{ return record_.AltLabelQV(orientation_); }
-
-inline std::string BamRecordView::AltLabelTags(void) const
-{ return record_.AltLabelTag(orientation_); }
-
-inline QualityValues BamRecordView::DeletionQVs(void) const
-{ return record_.DeletionQV(orientation_, aligned_, exciseSoftClips_); }
-
-inline std::string BamRecordView::DeletionTags(void) const
-{ return record_.DeletionTag(orientation_, aligned_, exciseSoftClips_); }
-
-inline QualityValues BamRecordView::InsertionQVs(void) const
-{ return record_.InsertionQV(orientation_, aligned_, exciseSoftClips_); }
-
-inline Frames BamRecordView::IPD(void) const
-{ return record_.IPD(orientation_, aligned_, exciseSoftClips_); }
-
-inline Frames BamRecordView::PrebaseFrames(void) const
-{ return record_.IPD(orientation_, aligned_, exciseSoftClips_); }
-
-inline QualityValues BamRecordView::LabelQVs(void) const
-{ return record_.LabelQV(orientation_); }
-
-inline QualityValues BamRecordView::MergeQVs(void) const
-{ return record_.MergeQV(orientation_, aligned_, exciseSoftClips_); }
-
-inline QualityValues BamRecordView::PulseMergeQVs(void) const
-{ return record_.PulseMergeQV(orientation_); }
-
-inline std::vector<float> BamRecordView::Pkmean(void) const
-{ return record_.Pkmean(orientation_); }
-
-inline std::vector<float> BamRecordView::Pkmid(void) const
-{ return record_.Pkmid(orientation_); }
-
-inline std::vector<float> BamRecordView::Pkmean2(void) const
-{ return record_.Pkmean2(orientation_); }
-
-inline std::vector<float> BamRecordView::Pkmid2(void) const
-{ return record_.Pkmid2(orientation_); }
-
-inline Frames BamRecordView::PrePulseFrames(void) const
-{ return record_.PrePulseFrames(orientation_); }
-
-inline std::string BamRecordView::PulseCalls(void) const
-{ return record_.PulseCall(orientation_); }
-
-inline Frames BamRecordView::PulseCallWidth(void) const
-{ return record_.PulseCallWidth(orientation_); }
-
-inline Frames BamRecordView::PulseWidths(void) const
-{ return record_.PulseWidth(orientation_, aligned_, exciseSoftClips_); }
-
-inline QualityValues BamRecordView::Qualities(void) const
-{ return record_.Qualities(orientation_, aligned_, exciseSoftClips_); }
-
-inline std::string BamRecordView::Sequence(void) const
-{ return record_.Sequence(orientation_, aligned_, exciseSoftClips_); }
-
-inline std::vector<uint32_t> BamRecordView::StartFrames(void) const
-{ return record_.StartFrame(orientation_); }
-
-inline QualityValues BamRecordView::SubstitutionQVs(void) const
-{ return record_.SubstitutionQV(orientation_, aligned_, exciseSoftClips_); }
-
-inline std::string BamRecordView::SubstitutionTags(void) const
-{ return record_.SubstitutionTag(orientation_, aligned_, exciseSoftClips_); }
 
 } // namespace BAM
 } // namespace PacBio

@@ -90,12 +90,17 @@ endif*/
 
 // Basic types
 %include "Accuracy.i"
+%include "BamRecordTag.i"
 %include "CigarOperation.i"
+%include "ClipType.i"
+%include "FrameEncodingType.i"
 %include "Interval.i"
 %include "LocalContextFlags.i"
 %include "Orientation.i"
 %include "Position.i"
+%include "PulseBehavior.i"
 %include "QualityValue.i"
+%include "RecordType.i"
 %include "Strand.i"
 %include "Tag.i"
 
@@ -115,6 +120,7 @@ endif*/
 %include "BamHeader.i"
 
 // SAM/BAM format
+%include "IRecordWriter.i"
 %include "BamFile.i"
 %include "BamRecordImpl.i"
 %include "BamRecord.i"
@@ -122,6 +128,7 @@ endif*/
 %include "BamTagCodec.i"
 %include "BamWriter.i"
 %include "SamTagCodec.i"
+%include "SamWriter.i"
 
 // DataSet
 %include "DataSetTypes.i"

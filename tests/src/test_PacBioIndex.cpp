@@ -258,13 +258,13 @@ bool PbiIndicesEqual(const PbiIndex& lhs, const PbiIndex& rhs)
 TEST(PacBioIndexTest, CreateFromExistingBam)
 {
     // do this in temp directory, so we can ensure write access
-    const string tempDir    = "/tmp/";
-    const string tempBamFn  = tempDir + "aligned2.bam";
+    const string tempDir    = tests::GeneratedData_Dir + "/";
+    const string tempBamFn  = tempDir + "aligned_copy.bam";
     const string tempPbiFn  = tempBamFn + ".pbi";
     string cmd("cp ");
     cmd += test2BamFn;
     cmd += " ";
-    cmd += tempDir;
+    cmd += tempBamFn;
     int cmdResult = system(cmd.c_str());
     (void)cmdResult;
 
@@ -296,7 +296,7 @@ TEST(PacBioIndexTest, CreateFromExistingBam)
 TEST(PacBioIndexTest, CreateOnTheFly)
 {
     // do this in temp directory, so we can ensure write access
-    const string tempDir    = "/tmp/";
+    const string tempDir    = tests::GeneratedData_Dir + "/";
     const string tempBamFn  = tempDir + "temp.bam";
     const string tempPbiFn  = tempBamFn + ".pbi";
 
@@ -378,7 +378,7 @@ TEST(PacBioIndexTest, RawLoadFromPbiFile)
 TEST(PacBioIndexTest, BasicAndBarodeSectionsOnly)
 {
     // do this in temp directory, so we can ensure write access
-    const string tempDir    = "/tmp/";
+    const string tempDir    = tests::GeneratedData_Dir + "/";
     const string tempBamFn  = tempDir + "phi29.bam";
     const string tempPbiFn  = tempBamFn + ".pbi";
     string cmd("cp ");
@@ -466,13 +466,29 @@ TEST(PacBioIndexTest, Copy_and_Move)
     const PbiIndex lookup(test2BamFn + ".pbi");
 
     const PbiIndex copyConstructed(lookup);
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpessimizing-move"
+#endif
     const PbiIndex moveConstructed(std::move(PbiIndex(test2BamFn + ".pbi")));
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
     PbiIndex copyAssigned;
     copyAssigned = lookup;
 
     PbiIndex moveAssigned;
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpessimizing-move"
+#endif
     moveAssigned = std::move(PbiIndex(test2BamFn + ".pbi"));
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
     EXPECT_TRUE(tests::PbiIndicesEqual(lookup, copyConstructed));
     EXPECT_TRUE(tests::PbiIndicesEqual(lookup, moveConstructed));
@@ -927,4 +943,70 @@ TEST(PacBioIndexTest, LookupMultiZmw)
     EXPECT_EQ(19, block2.firstIndex_);
     EXPECT_EQ(1,  block2.numReads_);
     EXPECT_EQ(1388881468, block2.virtualOffset_);
+}
+
+TEST(PacBioIndexTest, AggregatePBI)
+{
+
+    DataSet ds;
+    ExternalResources& resources = ds.ExternalResources();
+    resources.Add(BamFile{tests::Data_Dir + "/aligned.bam"});                           // 4 reads, BASIC | MAPPED | REFERENCE
+    resources.Add(BamFile{tests::Data_Dir + "/polymerase/production.subreads.bam"});    // 8 reads, BASIC | BARCODE
+    resources.Add(BamFile{tests::Data_Dir + "/polymerase/production_hq.hqregion.bam"}); // 1 read,  BASIC only
+
+    const PbiRawData index{ds};
+    const PbiRawBasicData&   mergedBasicData   = index.BasicData();
+    const PbiRawBarcodeData& mergedBarcodeData = index.BarcodeData();
+    const PbiRawMappedData&  mergedMappedData  = index.MappedData();
+
+    const uint32_t expectedTotal = 13; // 4 + 8 + 1
+
+    // 'meta' info
+    EXPECT_EQ(expectedTotal, index.NumReads());
+    EXPECT_EQ(PbiFile::BASIC | PbiFile::MAPPED | PbiFile::BARCODE, index.FileSections());
+    EXPECT_TRUE(index.HasBarcodeData());
+    EXPECT_TRUE(index.HasMappedData());
+    EXPECT_FALSE(index.HasReferenceData());
+
+    // file numbers
+    EXPECT_EQ(0, mergedBasicData.fileNumber_.at(0));
+    EXPECT_EQ(0, mergedBasicData.fileNumber_.at(1));
+    EXPECT_EQ(0, mergedBasicData.fileNumber_.at(2));
+    EXPECT_EQ(0, mergedBasicData.fileNumber_.at(3));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(4));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(5));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(6));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(7));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(8));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(9));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(10));
+    EXPECT_EQ(1, mergedBasicData.fileNumber_.at(11));
+    EXPECT_EQ(2, mergedBasicData.fileNumber_.at(12));
+
+    // basic data
+    EXPECT_EQ(0,    mergedBasicData.qStart_.at(0)); // file 1
+    EXPECT_EQ(0,    mergedBasicData.qStart_.at(1));
+    EXPECT_EQ(2659, mergedBasicData.qStart_.at(4)); // file 2
+    EXPECT_EQ(3116, mergedBasicData.qStart_.at(5));
+    EXPECT_EQ(2659, mergedBasicData.qStart_.at(12)); // file 3
+
+    EXPECT_EQ(21102592, mergedBasicData.fileOffset_.at(0)); // file 1
+    EXPECT_EQ(21102883, mergedBasicData.fileOffset_.at(1));
+    EXPECT_EQ(19857408, mergedBasicData.fileOffset_.at(4)); // file 2
+    EXPECT_EQ(19860696, mergedBasicData.fileOffset_.at(5));
+    EXPECT_EQ(20054016, mergedBasicData.fileOffset_.at(12)); // file 3
+
+    // mapped data
+    EXPECT_EQ(60,  mergedMappedData.mapQV_.at(0)); // file 1
+    EXPECT_EQ(60,  mergedMappedData.mapQV_.at(1));
+    EXPECT_EQ(255, mergedMappedData.mapQV_.at(4)); // file 2
+    EXPECT_EQ(255, mergedMappedData.mapQV_.at(5));
+    EXPECT_EQ(255, mergedMappedData.mapQV_.at(12)); // file 3
+
+    // barcode data
+    EXPECT_EQ(-1,  mergedBarcodeData.bcForward_.at(0)); // file 1
+    EXPECT_EQ(-1,  mergedBarcodeData.bcForward_.at(1));
+    EXPECT_EQ(92, mergedBarcodeData.bcForward_.at(4)); // file 2
+    EXPECT_EQ(92, mergedBarcodeData.bcForward_.at(5));
+    EXPECT_EQ(-1, mergedBarcodeData.bcForward_.at(12)); // file 3
 }

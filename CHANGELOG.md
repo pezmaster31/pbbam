@@ -11,17 +11,52 @@ guarantees will be maintained within each major version series.
 ## Active
 
 ### Added
+- (Unindexed) FASTA reader & FastaSequence data structure.
+- Missing unit tests for internal BAM tag access.
+- Chemistry data for basecaller v3.3.
+
+### Fixed
+- Reverse complement on padding base.
+
+## [0.7.0] - 2016-09-26 
+
+### Added
+- Clipping for CCS records
+
+### Fixed
+- Cached position data leaking across records while iterating.
+- Rolled back default pulse behavior in internal BAM API, to be backward-
+compatible with existing client code (for now at least). v0.6.0 introduced
+returning basecalled positions ONLY by default, rather than return ALL 
+pulses. 
+- Fixed crash when attempting to read from empty BAM/PBI files using the 
+PbiFilter-enabled APIs.
+
+## [0.6.0] - 2016-09-13
+
+### Added
 - BamWriter writes to a BAM file with the target name plus a ".tmp" suffix. On
 successful completion (i.e. normal BamWriter destruction, not triggered by a
 thrown exception) the file is renamed to the actual requested filename.
 - PBI file creation follows the same temporary naming convention.
 - Support for barcode pair (forward, reverse) in DataSetXML filter.
 - Validation API & 'auto-validate' compile-time switch. 
+- Added support for a batched QNAME whitelist filter in DataSet XML. Uses (new) 
+Property name 'qname_file', with the value being the filepath containing the 
+whitelist.
+- Exposed MD5 hashing to API.
+- Ability to remove base features from a ReadGroupInfo object.
+- Can construct an aggregate PbiRawData index object from a DataSet: essentially
+concatenates all PBI data within the dataset.
+- New SamWriter class to create SAM-formatted output of PacBio BAM data.
+- Extended APIs for accessing "internal BAM" data, including PulseBehavior
+switch for selecting between all pulses & basecalls only. 
 
 ### Fixed
 - Improper 'clip to reference' product for BamRecord in some cases.
 - Improper behavior in tag accessors (e.g. BamRecord::IPD()) on reverse strand-
 aligned reads (bug 31339).
+- Improper basecaller version parsing in ReadGroupInfo.
 
 ### Changed
 - RecordType::POLYMERASE renamed to RecordType::ZMW to reflect changes in
