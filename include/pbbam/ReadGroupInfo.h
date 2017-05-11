@@ -101,6 +101,7 @@ enum class BarcodeModeType
    NONE
  , SYMMETRIC
  , ASYMMETRIC
+ , TAILED
 };
 
 /// \brief This enum describes the type of value encoded by barcode quality,
@@ -209,11 +210,11 @@ public:
                   const std::string& readType,
                   const PlatformModelType platform);
 
-    ReadGroupInfo(const ReadGroupInfo& other);
-    ReadGroupInfo(ReadGroupInfo&& other);
-    ReadGroupInfo& operator=(const ReadGroupInfo& other);
-    ReadGroupInfo& operator=(ReadGroupInfo&& other);
-    ~ReadGroupInfo(void);
+    ReadGroupInfo(const ReadGroupInfo& other) = default;
+    ReadGroupInfo(ReadGroupInfo&& other) = default;
+    ReadGroupInfo& operator=(const ReadGroupInfo& other) = default;
+    ReadGroupInfo& operator=(ReadGroupInfo&& other) = default;
+    ~ReadGroupInfo(void) = default;
 
     /// \}
 
@@ -597,6 +598,7 @@ private:
     std::string bindingKit_;
     std::string sequencingKit_;
     std::string basecallerVersion_;
+    mutable std::string sequencingChemistry_;
     std::string frameRateHz_;
     bool        control_ = false;
     FrameCodec  ipdCodec_;

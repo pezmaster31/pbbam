@@ -46,7 +46,11 @@ namespace PacBio {
 namespace BAM {
 namespace internal {
 
-extern const std::vector<std::array<std::string, 4>> ChemistryTable;
+typedef std::vector<std::array<std::string, 4>> ChemistryTable;
+
+extern const ChemistryTable BuiltInChemistryTable;
+
+const ChemistryTable& GetChemistryTableFromEnv();
 
 } // namespace internal
 } // namespace BAM

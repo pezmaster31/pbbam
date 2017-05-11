@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015, Pacific Biosciences of California, Inc.
+// Copyright (c) 2016, Pacific Biosciences of California, Inc.
 //
 // All rights reserved.
 //
@@ -32,59 +32,54 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
-
+//
+// File Description
+/// \file FastaSequenceQuery.h
+/// \brief Defines the FastaSequenceQuery class.
+//
 // Author: Derek Barnett
 
-#include "AssertUtils.h"
-#include <cstdarg>
-#include <cstdio>
+#ifndef FASTASEQUENCEQUERY_H
+#define FASTASEQUENCEQUERY_H
+
+#include "pbbam/DataSet.h"
+#include "pbbam/FastaSequence.h"
+#include "pbbam/internal/QueryBase.h"
+
+#include <memory>
+#include <string>
 
 namespace PacBio {
 namespace BAM {
-namespace internal {
 
-static inline
-void message_out(FILE* stream,
-                 const char* format,
-                 const char* msg)
+///
+/// \brief The FastaSequence class represents a FASTA record (name & bases)
+///
+class FastaSequenceQuery : public internal::QueryBase<FastaSequence>
 {
-    fprintf(stream, format, msg);
-    fprintf(stream, "\n");
-    fflush(stream);
-}
+public:
+    /// \name Constructors & Related Methods
+    /// \{
 
-void printInfo(const char* msg, ...) {
+    FastaSequenceQuery(const PacBio::BAM::DataSet& dataset);
+    ~FastaSequenceQuery(void);
 
-    va_list ap;
-    va_start(ap, msg);
+    /// \}
 
-    char buffer[256] = {'\0' };
-    buffer[255] = '\0';
-    if (msg)
-        vsnprintf(buffer, 255, msg, ap);
-    va_end(ap);
+public:
+    /// \brief Main iteration point for record access.
+    ///
+    /// Most client code should not need to use this method directly. Use
+    /// iterators instead.
+    ///
+    bool GetNext(FastaSequence& seq);
 
-    message_out(stdout, "%s", buffer);
-}
+private:
+    struct FastaSequenceQueryPrivate;
+    std::unique_ptr<FastaSequenceQueryPrivate> d_;
+};
 
-void printError(const char* msg, ...) {
-
-    va_list ap;
-    va_start(ap, msg);
-
-    char buffer[256] = {'\0' };
-    buffer[255] = '\0';
-    if (msg)
-        vsnprintf(buffer, 255, msg, ap);
-    va_end(ap);
-
-    message_out(stderr, "%s", buffer);
-}
-
-void printFailedAssert(const char* msg) {
-    printError("ASSERT FAILED: %s", msg);
-}
-
-} // namespace internal
 } // namespace BAM
 } // namespace PacBio
+
+#endif // FASTASEQUENCEQUERY_H

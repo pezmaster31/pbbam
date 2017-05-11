@@ -154,12 +154,68 @@ TEST(DataSetIOTest, FromXmlFile)
 
 TEST(DataSetIOTest, ThrowsOnNonexistentFofnFile)
 {
-    EXPECT_THROW(DataSet{"does/not/exist.fofn"}, std::runtime_error);
+    bool checkedException = false;
+    try
+    {
+        auto ds = DataSet{"does/not/exist.fofn"};
+    }
+    catch(std::runtime_error& e)
+    {
+        const std::string msg = "could not open FOFN for reading: does/not/exist.fofn";
+        EXPECT_EQ(msg, e.what()) ;
+        checkedException = true;
+    }
+    EXPECT_TRUE(checkedException);
 }
 
 TEST(DataSetIOTest, ThrowsOnNonexistentXmlFile)
 {
-    EXPECT_THROW(DataSet{"does/not/exist.xml"}, std::runtime_error);
+    bool checkedException = false;
+    try
+    {
+        auto ds = DataSet{"does/not/exist.xml"};
+    }
+    catch(std::runtime_error& e)
+    {
+        const std::string msg = "could not open XML file for reading: does/not/exist.xml";
+        EXPECT_EQ(msg, e.what()) ;
+        checkedException = true;
+    }
+    EXPECT_TRUE(checkedException);
+}
+
+TEST(DataSetIOTest, ThrowsOnUnsupportedExtension)
+{
+    bool checkedException = false;
+    try
+    {
+        auto ds = DataSet{"bad/extension.foo"};
+    }
+    catch(std::runtime_error& e)
+    {
+        const std::string msg = "unsupported extension on input file: bad/extension.foo";
+        EXPECT_EQ(msg, e.what()) ;
+        checkedException = true;
+    }
+    EXPECT_TRUE(checkedException);
+}
+
+TEST(DataSetIOTest, ThrowsIfCannotOpenSaveFile)
+{
+    bool checkedException = false;
+    try
+    {
+        auto ds = DataSet{};
+        std::string fn = "fake_directory_that_should_not_exist/out.xml";
+        ds.Save(fn);
+    }
+    catch(std::runtime_error& e)
+    {
+        const std::string msg = "could not open XML file for writing: fake_directory_that_should_not_exist/out.xml";
+        EXPECT_EQ(msg, e.what()) ;
+        checkedException = true;
+    }
+    EXPECT_TRUE(checkedException);
 }
 
 TEST(DataSetIOTest, ToXml)
@@ -1314,17 +1370,17 @@ static void TestTransformedXml(void)
         const ExternalResource& resource = resources[i];
         if (i == 0) {
             EXPECT_EQ(string("PacBio.SubreadFile.BaxFile"), resource.MetaType());
-            EXPECT_EQ(string("file:///mnt/secondary-siv/testdata/LIMS/2590727/0001/Analysis_Results/m130608_033634_42129_c100515232550000001823076608221351_s1_p0.0.bax.h5"),
+            EXPECT_EQ(string("file:///pbi/dept/secondary/siv/testdata/LIMS/2590727/0001/Analysis_Results/m130608_033634_42129_c100515232550000001823076608221351_s1_p0.0.bax.h5"),
                       resource.ResourceId());
         }
         else if (i == 1) {
             EXPECT_EQ(string("PacBio.SubreadFile.BaxFile"), resource.MetaType());
-            EXPECT_EQ(string("file:///mnt/secondary-siv/testdata/LIMS/2590727/0001/Analysis_Results/m130608_033634_42129_c100515232550000001823076608221351_s1_p0.1.bax.h5"),
+            EXPECT_EQ(string("file:///pbi/dept/secondary/siv/testdata/LIMS/2590727/0001/Analysis_Results/m130608_033634_42129_c100515232550000001823076608221351_s1_p0.1.bax.h5"),
                       resource.ResourceId());
         }
         else {
             EXPECT_EQ(string("PacBio.SubreadFile.BaxFile"), resource.MetaType());
-            EXPECT_EQ(string("file:///mnt/secondary-siv/testdata/LIMS/2590727/0001/Analysis_Results/m130608_033634_42129_c100515232550000001823076608221351_s1_p0.2.bax.h5"),
+            EXPECT_EQ(string("file:///pbi/dept/secondary/siv/testdata/LIMS/2590727/0001/Analysis_Results/m130608_033634_42129_c100515232550000001823076608221351_s1_p0.2.bax.h5"),
                       resource.ResourceId());
         }
     }
@@ -1344,7 +1400,7 @@ TEST(DataSetIOTest, InspectMalformedXml)
 
     const string expected =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<SubreadSet Description=\"Merged dataset from 1 files using DatasetMerger 0.1.2\" "
+        "<SubreadSet CreatedAt=\"2015-08-19T15:39:36.331\" Description=\"Merged dataset from 1 files using DatasetMerger 0.1.2\" "
                     "MetaType=\"PacBio.DataSet.HdfSubreadSet\" Name=\"Subreads from runr000013_42267_150403\" "
                     "Tags=\"pacbio.secondary.instrument=RS\" TimeStampedName=\"hdfsubreadset_2015-08-19T15:39:36.331-07:00\" "
                     "UniqueId=\"b4741521-2a4c-42df-8a13-0a755ca9ed1e\" Version=\"0.5\" "
@@ -1512,5 +1568,24 @@ TEST(DataSetIOTest, DataSetFromRelativeBamFilename)
 
     // restore working directory
     changeCurrentDirectory(startingDirectory);
+}
+
+TEST(DataaSetIOTest, AllFiles) 
+{
+    // check  BamFiles only
+    EXPECT_NO_THROW(
+    {
+        const DataSet dataset(tests::Data_Dir + "/chunking/chunking.subreadset.xml");
+        const auto bamFiles = dataset.BamFiles();
+        EXPECT_EQ(3, bamFiles.size());
+    });
+
+    // now fetch all files (original BAMs plus PBI files)
+    EXPECT_NO_THROW(
+    {
+        const DataSet dataset(tests::Data_Dir + "/chunking/chunking.subreadset.xml");
+        const auto allFiles = dataset.AllFiles();
+        EXPECT_EQ(6, allFiles.size());    
+    });
 }
 

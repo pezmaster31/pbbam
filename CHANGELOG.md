@@ -11,9 +11,43 @@ guarantees will be maintained within each major version series.
 ## Active
 
 ### Added
+- Default DataSet 'Version' attribute if none already present (currently 4.0.0)
+- Added whitelist support for filtering ZMWs via DataSetXML.
+- Added iterable query over FASTA files & ReferenceSet datasets.
+- Added DataSet::AllFiles to access primary resources AND their child files (indices,
+scraps, etc).
+
+### Fixed
+- Bug in the build system preventing clean rebuilds.
+
+## [0.7.4] - 2016-11-18
+
+### Changed
+- Compatibility for merging BAM files no longer requires exact match of PacBioBAM
+version number (header @HD:pb tag). As long as both files meet the minimum 
+supported version number, the merge is allowed.
+
+## [0.7.3] - 2016-11-11
+
+### Added
+- Support for S/P2-C2 chemistry and forthcoming 4.0 basecaller
+
+## [0.7.2] - 2016-11-10
+
+### Removed
+- SAM header version equality check for merging BAM files. PacBioBAM version 
+number carries more meaning for PacBio data and thus will be the basis of 
+ensuring compatible merging.
+
+## [0.7.1] - 2016-11-09
+
+### Added
 - (Unindexed) FASTA reader & FastaSequence data structure.
 - Missing unit tests for internal BAM tag access.
 - Chemistry data for basecaller v3.3.
+- Missing parsers for filtering barcode quality ("bq"), barcode forward ("bcf"), 
+and barcode reverse ("bcr") from DataSetXML.
+- Integrated htslib into project.
 
 ### Fixed
 - Reverse complement on padding base.
