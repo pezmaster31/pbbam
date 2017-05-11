@@ -51,6 +51,7 @@ script:
 branches:
   only:
     - master
+    - develop
     
 notifications:
   recipients:
