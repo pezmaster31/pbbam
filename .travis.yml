@@ -8,7 +8,7 @@ before_install:
   # So we need to manually setup them up. 
   #
   #  - gcc 4.8 (current default on Travis is 4.7, which is no good for C++11 work)
-  #  - boost 1.55
+  #  - boost 1.58
   #  - cmake 3.x
   
   # add external repos
@@ -24,7 +24,7 @@ before_install:
   - sudo apt-get update -y -qq
 
   # install
-  - sudo apt-get install -y -qq g++-4.8 boost1.55 cmake-data cmake 
+  - sudo apt-get install -y -qq g++-4.8 boost1.58 cmake-data cmake 
   
   # make sure we're using new gcc tools
   - sudo update-alternatives --install /usr/bin/g++  g++  /usr/bin/g++-4.8  90
