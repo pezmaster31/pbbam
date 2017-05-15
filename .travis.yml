@@ -24,7 +24,7 @@ before_install:
   - sudo apt-get update -y -qq
 
   # install
-  - sudo apt-get install -y -qq g++-4.8 boost1.58 cmake-data cmake 
+  - sudo apt-get install -y -qq g++-4.8 libboost-dev cmake-data cmake 
   
   # make sure we're using new gcc tools
   - sudo update-alternatives --install /usr/bin/g++  g++  /usr/bin/g++-4.8  90
